@@ -1,4 +1,18 @@
 (function() {
+
+    chrome.browserAction.onClicked.addListener(function () {
+        var opt = {
+            type: "basic",
+            title: "Primary Title",
+            message: "Primary message to display",
+            iconUrl: "../icons/slack.png"
+        }
+
+        chrome.notifications.create("", opt, function () {
+
+        });
+    });
+
 	chrome.extension.onMessage.addListener(
 	  function(request, sender, sendResponse) {
 	  	if(request.alertLevel === 2) {
