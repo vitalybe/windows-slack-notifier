@@ -1,16 +1,15 @@
-chrome.extension.sendMessage({}, function(response) {
-	var readyStateCheckInterval = setInterval(function() {
-	if (document.readyState === "complete") {
-		clearInterval(readyStateCheckInterval);
+(function() {
+	setInterval(function() {
+		var alertLevel = 0;
+		if(document.querySelector("#channels_scroller .unread_highlight:not(.hidden)")) {
+			alertLevel = 2;
+		}
 
-		// ----------------------------------------------------------
-		// This part of the script triggers when page is done loading
-		alert("Hello. This message was sent from scripts/inject.js");
-		// ----------------------------------------------------------
+		if(!alertLevel && document.querySelector("#channels_scroller .unread")) {
+			alertLevel = 1;
+		}
 
-	}
-	}, 10);
-});
+		chrome.extension.sendMessage({alertLevel: alertLevel});
 
-debugger;
-alert("hmm");
+	}, 1000)
+})();
