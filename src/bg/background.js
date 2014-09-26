@@ -9,14 +9,32 @@
     };
 
     var lastAlertLevel = null;
+    var lastSender = null;
+
+    function focusOnLastSender() {
+        if (lastSender) {
+            chrome.tabs.update(lastSender.tab.id, {selected: true});
+        } else {
+            alert("No active Slack tab is found. Please open/reload one manually.")
+        }
+    }
+
+    chrome.browserAction.onClicked.addListener(function () {
+        focusOnLastSender();
+    });
+
+    chrome.notifications.onClicked.addListener(function () {
+        focusOnLastSender();
+    });
 
     chrome.extension.onMessage.addListener(
         function (request, sender, sendResponse) {
-            if(lastAlertLevel === request.alertLevel) {
+            if (lastAlertLevel === request.alertLevel) {
                 return;
             }
 
             lastAlertLevel = request.alertLevel;
+            lastSender = sender;
 
             if (request.alertLevel === 2) {
                 chrome.browserAction.setBadgeBackgroundColor({color: [255, 0, 0, 255]});
