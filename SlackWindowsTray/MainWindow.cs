@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using WebSocketSharp.Server;
 
@@ -25,13 +26,17 @@ namespace SlackWindowsTray
             {
                 Console.WriteLine("Listening on port {0}, and providing WebSocket services:", _wssv.Port);
                 foreach (var path in _wssv.WebSocketServices.Paths)
+                {
                     Console.WriteLine("- {0}", path);
+                }
             }
         }
 
         private void UpdateSlackState(SlackNotifierStates slackNotifierStates)
         {
             lblSlackStatus.Text = slackNotifierStates.ToString();
+            slackTrayIcon.Icon = new Icon(@"Icons\" + slackNotifierStates.ToString() + ".ico");
+            
         }
 
         private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)

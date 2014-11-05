@@ -28,7 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.lblSlackStatus = new System.Windows.Forms.Label();
+            this.slackTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.SuspendLayout();
             // 
             // lblSlackStatus
@@ -39,6 +42,11 @@
             this.lblSlackStatus.Size = new System.Drawing.Size(35, 13);
             this.lblSlackStatus.TabIndex = 0;
             this.lblSlackStatus.Text = "label1";
+            // 
+            // slackTrayIcon
+            // 
+            this.slackTrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("slackTrayIcon.Icon")));
+            this.slackTrayIcon.Visible = true;
             // 
             // MainWindow
             // 
@@ -59,6 +67,7 @@
         #endregion
 
         private System.Windows.Forms.Label lblSlackStatus;
+        private System.Windows.Forms.NotifyIcon slackTrayIcon;
 
     }
 }
