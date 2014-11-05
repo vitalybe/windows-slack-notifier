@@ -19,6 +19,13 @@
         }
     }
 
+    var websocket;
+    function connect() {
+        websocket = new WebSocket("ws://localhost:4649/Echo");
+        websocket.onopen = function(evt) { alert("open"); };
+        websocket.onclose = function(evt) { alert("close") };
+    }
+
     chrome.browserAction.onClicked.addListener(function () {
         focusOnLastSender();
     });
@@ -55,5 +62,9 @@
                 chrome.browserAction.setBadgeText({text: ""});
             }
 
+            websocket.send(request.alertLevel);
         });
+
+    connect();
+
 })();
