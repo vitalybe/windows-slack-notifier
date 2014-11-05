@@ -66,5 +66,15 @@
         });
 
     connect();
+    chrome.windows.getAll({populate:true},function(windows){
+        windows.forEach(function(window){
+            window.tabs.forEach(function(tab){
+                if(tab.url.indexOf("slack.com") >= 0) {
+                    chrome.tabs.reload(tab.id);
+                }
+            });
+        });
+    });
+
 
 })();
