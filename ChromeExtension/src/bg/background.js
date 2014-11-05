@@ -21,7 +21,7 @@
 
     var websocket;
     function connect() {
-        websocket = new WebSocket("ws://localhost:4649/Echo");
+        websocket = new WebSocket("ws://localhost:4649/Slack");
         websocket.onopen = function(evt) { alert("open"); };
         websocket.onclose = function(evt) { alert("close") };
     }

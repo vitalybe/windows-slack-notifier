@@ -1,1 +1,4 @@
 .idea/
+SlackWindowsTray/obj/
+SlackWindowsTray/bin/
+*.suo
