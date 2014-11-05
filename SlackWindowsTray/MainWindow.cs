@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebSocketSharp.Server;
 
@@ -23,7 +15,10 @@ namespace SlackWindowsTray
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            _wssv.AddWebSocketService<Slack>("/Slack");
+            UpdateSlackState(SlackNotifierStates.Disconnected);
+                
+            _wssv.AddWebSocketService<SlackEndpoint>("/Slack");
+            SlackEndpoint.OnSlackStateChanged += (o, state) => this.UIThread(delegate { UpdateSlackState(state); }); 
 
             _wssv.Start();
             if (_wssv.IsListening)
@@ -32,6 +27,11 @@ namespace SlackWindowsTray
                 foreach (var path in _wssv.WebSocketServices.Paths)
                     Console.WriteLine("- {0}", path);
             }
+        }
+
+        private void UpdateSlackState(SlackNotifierStates slackNotifierStates)
+        {
+            lblSlackStatus.Text = slackNotifierStates.ToString();
         }
 
         private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)

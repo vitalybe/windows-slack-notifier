@@ -28,22 +28,37 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.lblSlackStatus = new System.Windows.Forms.Label();
             this.SuspendLayout();
+            // 
+            // lblSlackStatus
+            // 
+            this.lblSlackStatus.AutoSize = true;
+            this.lblSlackStatus.Location = new System.Drawing.Point(106, 60);
+            this.lblSlackStatus.Name = "lblSlackStatus";
+            this.lblSlackStatus.Size = new System.Drawing.Size(35, 13);
+            this.lblSlackStatus.TabIndex = 0;
+            this.lblSlackStatus.Text = "label1";
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(268, 126);
+            this.Controls.Add(this.lblSlackStatus);
             this.Name = "MainWindow";
             this.Text = "Form1";
+            this.TopMost = true;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainWindow_FormClosed);
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Label lblSlackStatus;
 
     }
 }
