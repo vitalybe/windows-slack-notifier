@@ -41,6 +41,10 @@
         websocket = new WebSocket("ws://localhost:4649/Slack");
         websocket.onopen = function (evt) {
             setBadge("Connected");
+            if(lastAlertLevel !== null) {
+                // Tray app reconnected - Update the badges and send it the last alert level
+                onLastAlertLevelChanged();
+            }
         };
         websocket.onclose = function (evt) {
             //try to reconnect in 5 seconds
@@ -69,24 +73,31 @@
         focusOnLastSender();
     });
 
+    function onLastAlertLevelChanged() {
+        if (lastAlertLevel === 2) {
+            setBadge("Important unread", "ff0000");
+        } else if (lastAlertLevel === 1) {
+            setBadge("Unread", "ffffff");
+        } else {
+            setBadge("All read");
+        }
+
+        websocket.send(lastAlertLevel);
+    }
+
     chrome.extension.onMessage.addListener(
         function (request, sender, sendResponse) {
-            if (websocket.readyState != 1 || lastAlertLevel === request.alertLevel) {
+            if (lastAlertLevel === request.alertLevel) {
                 return;
             }
 
             lastAlertLevel = request.alertLevel;
-            lastSender = sender;
 
-            if (request.alertLevel === 2) {
-                setBadge("Important unread", "ff0000");
-            } else if (request.alertLevel === 1) {
-                setBadge("Unread", "ffffff");
-            } else {
-                setBadge("All read");
+            // Send only if connected and don't touch badge
+            if(websocket.readyState === 1) {
+                lastSender = sender;
+                onLastAlertLevelChanged();
             }
-
-            websocket.send(request.alertLevel);
         });
 
     // This will try to connect to a server and reconnect if needed
