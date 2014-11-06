@@ -47,7 +47,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChromeActivator.cs" />
     <Compile Include="ControlExtensions.cs" />
+    <Compile Include="HwndWindow.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -43,5 +43,14 @@ namespace SlackWindowsTray
         {
             _wssv.Stop();
         }
+
+        private void slackTrayIcon_Click(object sender, EventArgs e)
+        {
+            var activated = ChromeActivator.ActivateChromeWindowByTitle(window => window.Title.EndsWith(" Slack"));
+            if (!activated)
+            {
+                MessageBox.Show("Couldn't find Slack window");
+            }
+        }
     }
 }

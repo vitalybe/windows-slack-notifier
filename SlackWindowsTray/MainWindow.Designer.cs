@@ -47,6 +47,7 @@
             // 
             this.slackTrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("slackTrayIcon.Icon")));
             this.slackTrayIcon.Visible = true;
+            this.slackTrayIcon.Click += new System.EventHandler(this.slackTrayIcon_Click);
             // 
             // MainWindow
             // 
@@ -55,8 +56,10 @@
             this.ClientSize = new System.Drawing.Size(268, 126);
             this.Controls.Add(this.lblSlackStatus);
             this.Name = "MainWindow";
+            this.ShowInTaskbar = false;
             this.Text = "Form1";
             this.TopMost = true;
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainWindow_FormClosed);
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.ResumeLayout(false);
