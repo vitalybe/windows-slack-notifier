@@ -16,7 +16,7 @@ namespace SlackWindowsTray
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            UpdateSlackState(SlackNotifierStates.Disconnected);
+            UpdateSlackState(SlackNotifierStates.DisconnectedFromExtension);
                 
             _wssv.AddWebSocketService<SlackEndpoint>("/Slack");
             SlackEndpoint.OnSlackStateChanged += (o, state) => this.UIThread(delegate { UpdateSlackState(state); }); 
@@ -34,7 +34,7 @@ namespace SlackWindowsTray
 
         private void UpdateSlackState(SlackNotifierStates slackNotifierStates)
         {
-            lblSlackStatus.Text = slackNotifierStates.ToString();
+            slackTrayIcon.Text = slackNotifierStates.ToString();
             slackTrayIcon.Icon = new Icon(@"Icons\" + slackNotifierStates.ToString() + ".ico");
             
         }

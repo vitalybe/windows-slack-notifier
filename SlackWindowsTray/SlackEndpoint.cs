@@ -21,7 +21,7 @@ namespace SlackWindowsTray
 
         protected override void OnClose(CloseEventArgs e)
         {
-            OnSlackStateChanged(this, SlackNotifierStates.Disconnected);
+            OnSlackStateChanged(this, SlackNotifierStates.DisconnectedFromExtension);
         }
     }
 }

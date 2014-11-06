@@ -11,6 +11,7 @@
     var lastAlertLevel = null;
     var lastSender = null;
     var websocket;
+    var lastAlertMessageTime = Date.now();
 
     function hexToRgb(hex) {
         // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -36,7 +37,7 @@
     }
 
     function connect() {
-        setBadge("Disconnected", "000000");
+        setBadge("Disconnected from tray icon", "000000");
 
         websocket = new WebSocket("ws://localhost:4649/Slack");
         websocket.onopen = function (evt) {
@@ -87,6 +88,8 @@
 
     chrome.extension.onMessage.addListener(
         function (request, sender, sendResponse) {
+            lastAlertMessageTime = Date.now();
+
             if (lastAlertLevel === request.alertLevel) {
                 return;
             }
@@ -113,6 +116,14 @@
             });
         });
     });
+
+    setInterval(function () {
+        if(Date.now() - lastAlertMessageTime >= 5000) {
+            setBadge("Disconnected from Slack tab", "000000");
+            websocket.send(-1);
+            lastAlertLevel = -1;
+        }
+    }, 5000);
 
 
 })();
