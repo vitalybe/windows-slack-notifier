@@ -32,6 +32,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.lblSlackStatus = new System.Windows.Forms.Label();
             this.slackTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.trayContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.trayContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblSlackStatus
@@ -47,7 +50,21 @@
             // 
             this.slackTrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("slackTrayIcon.Icon")));
             this.slackTrayIcon.Visible = true;
-            this.slackTrayIcon.Click += new System.EventHandler(this.slackTrayIcon_Click);
+            this.slackTrayIcon.DoubleClick += new System.EventHandler(this.slackTrayIcon_DoubleClick);
+            // 
+            // trayContextMenu
+            // 
+            this.trayContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.quitToolStripMenuItem});
+            this.trayContextMenu.Name = "trayContextMenu";
+            this.trayContextMenu.Size = new System.Drawing.Size(153, 48);
+            // 
+            // quitToolStripMenuItem
+            // 
+            this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.quitToolStripMenuItem.Text = "Quit";
+            this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -62,6 +79,7 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainWindow_FormClosed);
             this.Load += new System.EventHandler(this.MainWindow_Load);
+            this.trayContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -71,6 +89,8 @@
 
         private System.Windows.Forms.Label lblSlackStatus;
         private System.Windows.Forms.NotifyIcon slackTrayIcon;
+        private System.Windows.Forms.ContextMenuStrip trayContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
 
     }
 }
