@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using Microsoft.Win32;
 using WebSocketSharp.Server;
 using Timer = System.Windows.Forms.Timer;
 
@@ -40,6 +43,20 @@ namespace SlackWindowsTray
                 {
                     Console.WriteLine("- {0}", path);
                 }
+            }
+
+            // Add the notifier to Windows startup:
+            try
+            {
+                RegistryKey currentVersionRunRegKey = Registry.CurrentUser.OpenSubKey(
+                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+
+                string startPath = Assembly.GetExecutingAssembly().Location;
+                currentVersionRunRegKey.SetValue("SlackWindowsTray", '"' + startPath + '"');
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Failed to add SlackWindowsTray to run on startup: " + ex.Message);
             }
         }
 
