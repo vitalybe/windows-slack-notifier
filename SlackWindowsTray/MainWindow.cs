@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using WebSocketSharp.Server;
 using Timer = System.Windows.Forms.Timer;
+using System.IO;
 
 namespace SlackWindowsTray
 {
@@ -76,7 +77,9 @@ namespace SlackWindowsTray
 
         private void ChangeTrayIcon(SlackNotifierStates state)
         {
-            slackTrayIcon.Icon = new Icon(@"Icons\" + state.ToString() + ".ico");
+            var appDir = Path.GetDirectoryName(Application.ExecutablePath);
+            var iconPath = Path.Combine(appDir, "Icons", state.ToString() + ".ico");
+            slackTrayIcon.Icon = new Icon(iconPath);
         }
 
         private void AnimationTimerOnTick(object sender, EventArgs eventArgs)
