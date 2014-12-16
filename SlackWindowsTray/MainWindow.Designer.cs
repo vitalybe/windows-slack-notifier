@@ -34,6 +34,8 @@
             this.slackTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.snoozeStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.trayContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,16 +57,31 @@
             // trayContextMenu
             // 
             this.trayContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.snoozeStripMenuItem1,
+            this.toolStripSeparator1,
             this.quitToolStripMenuItem});
             this.trayContextMenu.Name = "trayContextMenu";
-            this.trayContextMenu.Size = new System.Drawing.Size(153, 48);
+            this.trayContextMenu.Size = new System.Drawing.Size(153, 76);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            // 
+            // snoozeStripMenuItem1
+            // 
+            this.snoozeStripMenuItem1.Name = "snoozeStripMenuItem1";
+            this.snoozeStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.snoozeStripMenuItem1.Text = "Snooze";
+            this.snoozeStripMenuItem1.ToolTipText = "Don\'t show unread/mention notifications for a while";
+            this.snoozeStripMenuItem1.Click += new System.EventHandler(this.snoozeStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -91,6 +108,8 @@
         private System.Windows.Forms.NotifyIcon slackTrayIcon;
         private System.Windows.Forms.ContextMenuStrip trayContextMenu;
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem snoozeStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 
     }
 }

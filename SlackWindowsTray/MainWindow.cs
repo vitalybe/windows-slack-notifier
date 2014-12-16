@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using WebSocketSharp.Server;
 using Timer = System.Windows.Forms.Timer;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace SlackWindowsTray
 {
@@ -18,6 +19,7 @@ namespace SlackWindowsTray
         private bool _animationIconBlink = true;
         private Timer _animationTimer = new Timer(); 
         private SlackNotifierStates _lastState = SlackNotifierStates.DisconnectedFromExtension;
+        private bool _isSnoozed = false;
 
         public MainWindow()
         {
@@ -31,10 +33,10 @@ namespace SlackWindowsTray
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            UpdateSlackState(SlackNotifierStates.DisconnectedFromExtension);
+            ChangeSlackState(SlackNotifierStates.DisconnectedFromExtension);
                 
             _wssv.AddWebSocketService<SlackEndpoint>("/Slack");
-            SlackEndpoint.OnSlackStateChanged += (o, state) => this.UIThread(delegate { UpdateSlackState(state); }); 
+            SlackEndpoint.OnSlackStateChanged += (o, state) => this.UIThread(delegate { ChangeSlackState(state); }); 
 
             _wssv.Start();
             if (_wssv.IsListening)
@@ -61,18 +63,21 @@ namespace SlackWindowsTray
             }
         }
 
-        private void UpdateSlackState(SlackNotifierStates newState)
+        private void ChangeSlackState(SlackNotifierStates newState)
         {
             _lastState = newState;
-            
-            // Change the icon and the tooltip
-            slackTrayIcon.Text = newState.ToString();
-            ChangeTrayIcon(newState);
 
-            // Start the animation if possible and enabled
-            var canAnimateIcon = newState == SlackNotifierStates.ImportantUnread ||
-                                 newState == SlackNotifierStates.Unread;
-            _animationTimer.Enabled = canAnimateIcon;
+            if (_isSnoozed == false)
+            {
+                // Change the icon and the tooltip
+                slackTrayIcon.Text = newState.ToString();
+                ChangeTrayIcon(newState);
+
+                // Start the animation if possible and enabled
+                var canAnimateIcon = newState == SlackNotifierStates.ImportantUnread ||
+                                     newState == SlackNotifierStates.Unread;
+                _animationTimer.Enabled = canAnimateIcon;
+            }
         }
 
         private void ChangeTrayIcon(SlackNotifierStates state)
@@ -106,6 +111,16 @@ namespace SlackWindowsTray
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        async private void snoozeStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var lastStateBeforeSnooze = _lastState;
+            ChangeSlackState(SlackNotifierStates.AllRead);
+            _isSnoozed = true;
+            await Task.Delay(TimeSpan.FromSeconds(10));
+            _isSnoozed = false;
+            ChangeSlackState(lastStateBeforeSnooze);
         }
     }
 }
