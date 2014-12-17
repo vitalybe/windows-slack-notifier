@@ -19,7 +19,7 @@ namespace SlackWindowsTray
             return true;
         }
 
-        protected override StateProcessorPriorityEnum Priority
+        public override StateProcessorPriorityEnum Priority
         {
             get
             {

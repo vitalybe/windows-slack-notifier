@@ -64,49 +64,4 @@ namespace SlackWindowsTray
             }
         }
     }
-
-    public enum StateProcessorPriorityEnum
-    {
-        Start,
-        Snoozing,
-        Animation,
-        Callback,
-    }
-
-    abstract class StateProcessorBase
-    {
-        protected abstract bool HandleStateRaw(SlackNotifierStates state);
-
-        public virtual void OnAdd() { }
-        public virtual void OnRemove() { }
-
-        public abstract StateProcessorPriorityEnum Priority { get; }
-
-        public StateProcessorBase Next { get; set; }
-        
-        public void HandleState(SlackNotifierStates state)
-        {
-            HandleState(state, skipMyself: false);
-        }
-
-        protected void NextHandleState(SlackNotifierStates state)
-        {
-            HandleState(state, skipMyself: true);            
-        }
-
-        private void HandleState(SlackNotifierStates state, bool skipMyself)
-        {
-            var continueToNextProcessor = true;
-            if (!skipMyself)
-            {
-                continueToNextProcessor = this.HandleStateRaw(state);
-            }
-
-            if (continueToNextProcessor && Next != null)
-            {
-                Next.HandleState(state);
-            }
-        }
-
-    }
 }

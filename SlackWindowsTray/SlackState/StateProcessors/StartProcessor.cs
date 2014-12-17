@@ -2,7 +2,7 @@
 {
     class StartProcessor : StateProcessorBase
     {
-        protected override StateProcessorPriorityEnum Priority
+        public override StateProcessorPriorityEnum Priority
         {
             get { return StateProcessorPriorityEnum.Start; }
         }

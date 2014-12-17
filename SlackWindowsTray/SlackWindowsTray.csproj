@@ -73,8 +73,14 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SlackEndpoint.cs" />
-    <Compile Include="SlackNotifierStates.cs" />
+    <Compile Include="SlackState\SlackEndpoint.cs" />
+    <Compile Include="SlackState\SlackNotifierStates.cs" />
+    <Compile Include="SlackState\StateProcessors\SnoozingProcessor.cs" />
+    <Compile Include="SlackState\StateProcessors\StateProcessorBase.cs" />
+    <Compile Include="SlackState\StateProcessors\StartProcessor.cs" />
+    <Compile Include="SlackState\StateProcessors\StateCallbackProcessor.cs" />
+    <Compile Include="SlackState\StateProcessors\StateAnimationProcessor.cs" />
+    <Compile Include="SlackState\StateService.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>

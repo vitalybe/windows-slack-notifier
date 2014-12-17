@@ -10,17 +10,17 @@ namespace SlackWindowsTray
             _lastState = _lastSlackState;
         }
 
-        protected override StateProcessorPriorityEnum Priority
+        public override StateProcessorPriorityEnum Priority
         {
             get { return StateProcessorPriorityEnum.Snoozing; }
         }
 
-        protected override void OnAdd()
+        public override void OnAdd()
         {
             NextHandleState(SlackNotifierStates.AllRead);
         }
 
-        protected override void OnRemove()
+        public override void OnRemove()
         {
             NextHandleState(_lastState);
         }

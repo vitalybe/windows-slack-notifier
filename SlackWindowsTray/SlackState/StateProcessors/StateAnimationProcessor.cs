@@ -36,6 +36,6 @@ namespace SlackWindowsTray
             return true;
         }
 
-        protected override StateProcessorPriorityEnum Priority { get { return StateProcessorPriorityEnum.Snoozing; } }
+        public override StateProcessorPriorityEnum Priority { get { return StateProcessorPriorityEnum.Animation; } }
     }
 }
