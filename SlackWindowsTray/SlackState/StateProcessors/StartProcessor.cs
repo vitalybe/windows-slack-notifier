@@ -1,4 +1,6 @@
-﻿namespace SlackWindowsTray
+﻿using System.Collections.Generic;
+
+namespace SlackWindowsTray
 {
     class StartProcessor : StateProcessorBase
     {
@@ -7,7 +9,7 @@
             get { return StateProcessorPriorityEnum.Start; }
         }
 
-        protected override bool HandleStateRaw(SlackNotifierStates state)
+        protected override bool HandleStateRaw(SlackState slackState)
         {
             return true;
         }

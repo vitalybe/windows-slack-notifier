@@ -1,20 +1,22 @@
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace SlackWindowsTray
 {
     class StateCallbackProcessor : StateProcessorBase
     {
-        private readonly Action<SlackNotifierStates> _callbackAction;
+        private readonly Action<TrayStates> _callbackAction;
 
 
-        public StateCallbackProcessor(Action<SlackNotifierStates> callbackAction)
+        public StateCallbackProcessor(Action<TrayStates> callbackAction)
         {
             _callbackAction = callbackAction;
         }
 
-        protected override bool HandleStateRaw(SlackNotifierStates state)
+        protected override bool HandleStateRaw(SlackState slackState)
         {
-            _callbackAction(state);
+            _callbackAction(slackState.TrayState);
 
             return true;
         }

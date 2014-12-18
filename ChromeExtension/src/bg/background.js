@@ -8,7 +8,7 @@
         iconUrl: "../icons/icon128.png"
     };
 
-    var lastAlertLevel = null;
+    var lastMessage = null;
     var lastSender = null;
     var websocket;
     var lastAlertMessageTime = Date.now();
@@ -42,9 +42,9 @@
         websocket = new WebSocket("ws://localhost:4649/Slack");
         websocket.onopen = function (evt) {
             setBadge("Connected");
-            if(lastAlertLevel !== null) {
+            if(lastMessage !== null) {
                 // Tray app reconnected - Update the badges and send it the last alert level
-                onLastAlertLevelChanged();
+                sendLastMessage();
             }
         };
         websocket.onclose = function (evt) {
@@ -74,32 +74,25 @@
         focusOnLastSender();
     });
 
-    function onLastAlertLevelChanged() {
-        if (lastAlertLevel === 2) {
-            setBadge("Important unread", "ff0000");
-        } else if (lastAlertLevel === 1) {
-            setBadge("Unread", "ffffff");
-        } else {
-            setBadge("All read");
-        }
-
-        websocket.send(lastAlertLevel);
+    function sendLastMessage() {
+        websocket.send(lastMessage);
     }
 
     chrome.extension.onMessage.addListener(
-        function (request, sender, sendResponse) {
+        function (message, sender, sendResponse) {
             lastAlertMessageTime = Date.now();
 
-            if (lastAlertLevel === request.alertLevel) {
+            var stringMessage = JSON.stringify(message);
+            if (lastMessage === stringMessage) {
                 return;
             }
 
-            lastAlertLevel = request.alertLevel;
+            lastMessage = stringMessage;
 
-            // Send only if connected and don't touch badge
+            // Send only if connected
             if(websocket.readyState === 1) {
                 lastSender = sender;
-                onLastAlertLevelChanged();
+                sendLastMessage();
             }
         });
 
@@ -121,7 +114,7 @@
         if(Date.now() - lastAlertMessageTime >= 5000) {
             setBadge("Disconnected from Slack tab", "000000");
             websocket.send(-1);
-            lastAlertLevel = -1;
+            lastMessage = -1;
         }
     }, 5000);
 

@@ -38,7 +38,7 @@ namespace SlackWindowsTray
             }
         }
 
-        private void ChangeSlackState(SlackNotifierStates newState)
+        private void ChangeSlackState(TrayStates newState)
         {
             // Change the icon and the tooltip
             slackTrayIcon.Text = newState.ToString();

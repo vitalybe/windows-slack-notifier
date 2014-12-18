@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
@@ -6,22 +9,24 @@ namespace SlackWindowsTray
 {
     public class SlackEndpoint : WebSocketBehavior
     {
-        public static event EventHandler<SlackNotifierStates> OnSlackStateChanged = delegate {};
+        public static event EventHandler<SlackState> OnSlackStateChanged = delegate { };
 
         protected override void OnOpen()
         {
-            OnSlackStateChanged(this, SlackNotifierStates.AllRead);
+            OnSlackStateChanged(this, new SlackState(TrayStates.AllRead));
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            var state = (SlackNotifierStates) Enum.Parse(typeof(SlackNotifierStates), e.Data);
-            OnSlackStateChanged(this, state);
+            var chatStateList = JsonConvert.DeserializeObject<List<ChatState>>(e.Data);
+            SlackState slackState = new SlackState(chatStateList);
+
+            OnSlackStateChanged(this, slackState);
         }
 
         protected override void OnClose(CloseEventArgs e)
         {
-            OnSlackStateChanged(this, SlackNotifierStates.DisconnectedFromExtension);
+            OnSlackStateChanged(this, new SlackState(TrayStates.DisconnectedFromExtension));
         }
     }
 }

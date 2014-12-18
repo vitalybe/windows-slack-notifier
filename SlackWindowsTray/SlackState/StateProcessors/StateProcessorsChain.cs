@@ -56,7 +56,7 @@ namespace SlackWindowsTray
             }
         }
 
-        public void HandleState(SlackNotifierStates state)
+        public void HandleState(SlackState state)
         {
             if (_root != null)
             {

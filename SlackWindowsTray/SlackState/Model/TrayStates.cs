@@ -1,6 +1,6 @@
 namespace SlackWindowsTray
 {
-    public enum SlackNotifierStates
+    public enum TrayStates
     {
         DisconnectedFromExtension = -2,
         DisconnectedFromSlack = -1,

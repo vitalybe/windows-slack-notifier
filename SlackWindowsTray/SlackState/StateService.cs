@@ -8,7 +8,7 @@ namespace SlackWindowsTray
     {
         private WebSocketServer _wssv = new WebSocketServer(4649);
         private StateProcessorsChain _processorsChain;
-        private SlackNotifierStates _lastSlackState;
+        private SlackState _lastSlackState;
 
         private StateService()
         {
@@ -16,7 +16,7 @@ namespace SlackWindowsTray
             _processorsChain.AddProcessor(new StateCallbackProcessor(state => OnStateChange(null, state)));
             _processorsChain.AddProcessor(new StateAnimationProcessor());
 
-            _processorsChain.HandleState(SlackNotifierStates.DisconnectedFromExtension);
+            _processorsChain.HandleState(new SlackState(TrayStates.DisconnectedFromExtension));
 
             ConnectionToExtension();
         }
@@ -37,7 +37,7 @@ namespace SlackWindowsTray
             }
         }
 
-        private void UpdateState(SlackNotifierStates state)
+        private void UpdateState(SlackState state)
         {
             _lastSlackState = state;
 
@@ -46,7 +46,7 @@ namespace SlackWindowsTray
 
         public static readonly StateService Instance = new StateService();
 
-        public event EventHandler<SlackNotifierStates> OnStateChange = delegate { };
+        public event EventHandler<TrayStates> OnStateChange = delegate { };
 
         public async Task Snooze()
         {

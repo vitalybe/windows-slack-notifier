@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Timers;
 
 namespace SlackWindowsTray
 {
     class StateAnimationProcessor : StateProcessorBase
     {
-        private SlackNotifierStates _lastState;
+        private TrayStates _lastTrayState;
+        private SlackState _lastSlackState;
+
         private readonly Timer _animationTimer = new Timer();
         private bool _animationIconBlink = true;
 
@@ -18,19 +21,21 @@ namespace SlackWindowsTray
 
         private void AnimationTimerOnTick(object sender, EventArgs eventArgs)
         {
-            var blinkState = _animationIconBlink ? SlackNotifierStates.AllRead : _lastState;
-            NextHandleState(blinkState);
             _animationIconBlink = !_animationIconBlink;
+
+            _lastSlackState.TrayState = _animationIconBlink ? TrayStates.AllRead : _lastTrayState;
+            NextHandleState(_lastSlackState);
         }
 
 
-        protected override bool HandleStateRaw(SlackNotifierStates state)
+        protected override bool HandleStateRaw(SlackState slackState)
         {
-            _lastState = state;
+            _lastSlackState = slackState;
+            _lastTrayState = slackState.TrayState;
 
             // Start the animation if possible and enabled
-            var canAnimateIcon = state == SlackNotifierStates.ImportantUnread ||
-                                 state == SlackNotifierStates.Unread;
+            var canAnimateIcon = _lastTrayState == TrayStates.ImportantUnread ||
+                                 _lastTrayState == TrayStates.Unread;
             _animationTimer.Enabled = canAnimateIcon;
 
             return true;
