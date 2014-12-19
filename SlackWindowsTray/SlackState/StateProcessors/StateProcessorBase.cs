@@ -33,7 +33,7 @@ namespace SlackWindowsTray
 
             if (continueToNextProcessor && Next != null)
             {
-                Next.HandleState(slackState);
+                Next.HandleState(slackState.Clone());
             }
         }
 
