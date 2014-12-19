@@ -38,13 +38,13 @@ namespace SlackWindowsTray
             }
         }
 
-        private void ChangeSlackState(TrayStates newState)
+        private void ChangeSlackState(SlackState slackState)
         {
             // Change the icon and the tooltip
-            slackTrayIcon.Text = newState.ToString();
+            slackTrayIcon.Text = slackState.TrayState.ToString();
 
             var appDir = Path.GetDirectoryName(Application.ExecutablePath);
-            var iconPath = Path.Combine(appDir, "Icons", newState.ToString() + ".ico");
+            var iconPath = Path.Combine(appDir, "Icons", slackState.TrayState + ".ico");
             slackTrayIcon.Icon = new Icon(iconPath);
         }
 

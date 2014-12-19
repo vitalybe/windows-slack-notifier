@@ -6,17 +6,17 @@ namespace SlackWindowsTray
 {
     class StateCallbackProcessor : StateProcessorBase
     {
-        private readonly Action<TrayStates> _callbackAction;
+        private readonly Action<SlackState> _callbackAction;
 
 
-        public StateCallbackProcessor(Action<TrayStates> callbackAction)
+        public StateCallbackProcessor(Action<SlackState> callbackAction)
         {
             _callbackAction = callbackAction;
         }
 
         protected override bool HandleStateRaw(SlackState slackState)
         {
-            _callbackAction(slackState.TrayState);
+            _callbackAction(slackState);
 
             return true;
         }

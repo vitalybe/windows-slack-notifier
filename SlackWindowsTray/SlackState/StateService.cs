@@ -13,7 +13,7 @@ namespace SlackWindowsTray
         private StateService()
         {
             _processorsChain = new StateProcessorsChain();
-            _processorsChain.AddProcessor(new StateCallbackProcessor(state => OnStateChange(null, state)));
+            _processorsChain.AddProcessor(new StateCallbackProcessor(slackState => OnStateChange(null, slackState)));
             _processorsChain.AddProcessor(new StateAnimationProcessor());
 
             _processorsChain.HandleState(new SlackState(TrayStates.DisconnectedFromExtension));
@@ -46,7 +46,7 @@ namespace SlackWindowsTray
 
         public static readonly StateService Instance = new StateService();
 
-        public event EventHandler<TrayStates> OnStateChange = delegate { };
+        public event EventHandler<SlackState> OnStateChange = delegate { };
 
         public async Task Snooze()
         {
