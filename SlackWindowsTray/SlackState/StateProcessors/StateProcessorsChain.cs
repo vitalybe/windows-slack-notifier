@@ -10,8 +10,6 @@ namespace SlackWindowsTray
             {
                 newProcessor.Next = currentProcessor.Next;
                 currentProcessor.Next = newProcessor;
-
-                newProcessor.OnAdd();
             }
             else
             {
@@ -23,7 +21,6 @@ namespace SlackWindowsTray
         {
             if (currentProcessor.Next == removedProcessor)
             {
-                currentProcessor.Next.OnRemove();
                 currentProcessor.Next = removedProcessor.Next;
             }
             else if (currentProcessor.Next != null)

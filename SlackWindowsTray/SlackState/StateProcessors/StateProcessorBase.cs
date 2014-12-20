@@ -6,9 +6,6 @@ namespace SlackWindowsTray
     {
         protected abstract bool HandleStateRaw(SlackState slackState);
 
-        public virtual void OnAdd() { }
-        public virtual void OnRemove() { }
-
         public abstract StateProcessorPriorityEnum Priority { get; }
 
         public StateProcessorBase Next { get; set; }

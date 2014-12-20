@@ -6,15 +6,19 @@ namespace SlackWindowsTray
 {
     class StateService
     {
-        private WebSocketServer _wssv = new WebSocketServer(4649);
-        private StateProcessorsChain _processorsChain;
+        private readonly WebSocketServer _wssv = new WebSocketServer(4649);
+        private readonly SnoozingProcessor _snoozingProcessor;
+        private readonly StateProcessorsChain _processorsChain;
         private SlackState _lastSlackState;
 
         private StateService()
         {
+            _snoozingProcessor = new SnoozingProcessor(() => OnSnoozeFinished(this, null));
+
             _processorsChain = new StateProcessorsChain();
             _processorsChain.AddProcessor(new StateCallbackProcessor(slackState => OnStateChange(null, slackState)));
             _processorsChain.AddProcessor(new StateAnimationProcessor());
+            _processorsChain.AddProcessor(_snoozingProcessor);
 
             _processorsChain.HandleState(new SlackState(TrayStates.DisconnectedFromExtension));
 
@@ -47,13 +51,16 @@ namespace SlackWindowsTray
         public static readonly StateService Instance = new StateService();
 
         public event EventHandler<SlackState> OnStateChange = delegate { };
+        public event EventHandler OnSnoozeFinished = delegate { };
 
-        public async Task Snooze()
+        public void Snooze(string chatName = null)
         {
-            var snoozingProcessor = new SnoozingProcessor(_lastSlackState);
-            _processorsChain.AddProcessor(snoozingProcessor);
-            await Task.Delay(TimeSpan.FromSeconds(3));
-            _processorsChain.RemoveProcessor(snoozingProcessor);
+            _snoozingProcessor.Snooze(chatName);
+        }
+
+        public void Unsnooze()
+        {
+            _snoozingProcessor.Unsnooze();
         }
     }
 }

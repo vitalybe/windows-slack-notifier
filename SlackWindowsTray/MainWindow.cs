@@ -6,12 +6,14 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using System.IO;
+using System.Linq;
 
 namespace SlackWindowsTray
 {
     public partial class MainWindow : Form
     {
         private StateService _stateService = StateService.Instance;
+        private SlackState _lastSlackState;
 
         public MainWindow()
         {
@@ -19,6 +21,7 @@ namespace SlackWindowsTray
             slackTrayIcon.ContextMenuStrip = trayContextMenu;
 
             _stateService.OnStateChange += (o, state) => this.UIThread(delegate { ChangeSlackState(state); });
+            _stateService.OnSnoozeFinished += StateServiceOnOnSnoozeFinished;
         }
 
         private void MainWindow_Load(object sender, EventArgs e)
@@ -40,6 +43,7 @@ namespace SlackWindowsTray
 
         private void ChangeSlackState(SlackState slackState)
         {
+            _lastSlackState = slackState;
             // Change the icon and the tooltip
             slackTrayIcon.Text = slackState.TrayState.ToString();
 
@@ -62,11 +66,74 @@ namespace SlackWindowsTray
             this.Close();
         }
 
+        private void ShowHideSnoozeMenuItems(bool snoozeVisible)
+        {
+            snoozeStripMenuItem.Visible = snoozeVisible;
+            unsnoozeStripMenuItem.Visible = !snoozeVisible;
+        }
+
         private async void snoozeStripMenuItem_Click(object sender, EventArgs e)
         {
-            snoozeStripMenuItem.Visible = false;
-            await _stateService.Snooze();
-            snoozeStripMenuItem.Visible = true;
+            ShowHideSnoozeMenuItems(snoozeVisible: false);
+            _stateService.Snooze();
+        }
+
+        private void unsnoozeStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _stateService.Unsnooze();
+        }
+
+        
+        private void StateServiceOnOnSnoozeFinished(object sender, EventArgs eventArgs)
+        {
+            ShowHideSnoozeMenuItems(snoozeVisible: true);
+        }
+
+        private EventHandler getChatSnoozeItemClickEvent(ChatState chatState)
+        {
+            return delegate
+            {
+                ShowHideSnoozeMenuItems(snoozeVisible: false);
+                _stateService.Snooze(chatState.name);
+            };
+        }
+
+
+        private void trayContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            const string CHAT_SNOOZE_SEPERATOR = "ChatSnoozeSeperator";
+
+            // Delete old snooze menu items
+            var chatSnoozeMenuItems = (from contextItem in trayContextMenu.Items.Cast<ToolStripItem>()
+                                       where (string)contextItem.Tag == CHAT_SNOOZE_SEPERATOR
+                                       select contextItem).ToList();
+
+            foreach (var chatSnoozeMenuItem in chatSnoozeMenuItems)
+            {
+                trayContextMenu.Items.Remove(chatSnoozeMenuItem);
+            }
+
+            // Create new snooze menu items
+            if (_lastSlackState != null)
+            {
+                var newMenuItems = (from chatState in _lastSlackState.ChatStates
+                                    where chatState.unread
+                                    orderby chatState.name
+                                    let menuName = "Snooze " + chatState.name
+                                    let clickEvent = getChatSnoozeItemClickEvent(chatState)
+                                    select new ToolStripMenuItem(menuName, null, clickEvent) { Tag = CHAT_SNOOZE_SEPERATOR }
+                                   ).ToList();
+
+                if (newMenuItems.Any())
+                {
+                    trayContextMenu.Items.Insert(0, new ToolStripSeparator { Tag = CHAT_SNOOZE_SEPERATOR });
+
+                    foreach (var menuItem in newMenuItems)
+                    {
+                        trayContextMenu.Items.Insert(0, menuItem);
+                    }
+                }
+            }
         }
     }
 }
