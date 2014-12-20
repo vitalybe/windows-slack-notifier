@@ -37,7 +37,8 @@ namespace SlackWindowsTray
 
                 try
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(10), _snoozeCancellationToken.Token);
+                    var soozeTimeout = TimeSpan.FromMinutes(SlackWindowsTray.Default.SnoozeChatTimeMinutes);
+                    await Task.Delay(soozeTimeout, _snoozeCancellationToken.Token);
                 }
                 catch (TaskCanceledException e)
                 {
@@ -57,7 +58,8 @@ namespace SlackWindowsTray
 
                 try
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(10), _snoozeCancellationToken.Token);
+                    var soozeTimeout = TimeSpan.FromMinutes(SlackWindowsTray.Default.SnoozeAllTimeMinutes);
+                    await Task.Delay(soozeTimeout, _snoozeCancellationToken.Token);
                 }
                 catch (TaskCanceledException e)
                 {
@@ -68,7 +70,6 @@ namespace SlackWindowsTray
 
                 CallbackIfAllSnoozeFinished();
             }
-            
         }
 
         private void CallbackIfAllSnoozeFinished()

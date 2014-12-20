@@ -135,5 +135,12 @@ namespace SlackWindowsTray
                 }
             }
         }
+
+        private void OptionsStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OptionsForm form = new OptionsForm();
+            form.ShowDialog();
+            _stateService.Refresh();
+        }
     }
 }

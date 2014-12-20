@@ -62,5 +62,10 @@ namespace SlackWindowsTray
         {
             _snoozingProcessor.Unsnooze();
         }
+
+        public void Refresh()
+        {
+            UpdateState(_lastSlackState);
+        }
     }
 }

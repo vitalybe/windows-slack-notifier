@@ -34,8 +34,9 @@ namespace SlackWindowsTray
             _lastTrayState = slackState.TrayState;
 
             // Start the animation if possible and enabled
-            var canAnimateIcon = _lastTrayState == TrayStates.ImportantUnread ||
-                                 _lastTrayState == TrayStates.Unread;
+            var canAnimateIcon = SlackWindowsTray.Default.ToBlinkOnMention&& _lastTrayState == TrayStates.ImportantUnread;
+            canAnimateIcon |= SlackWindowsTray.Default.ToBlinkOnUnread && _lastTrayState == TrayStates.Unread;
+                                 
             _animationTimer.Enabled = canAnimateIcon;
 
             return true;

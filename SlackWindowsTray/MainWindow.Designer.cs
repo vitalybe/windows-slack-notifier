@@ -37,6 +37,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unsnoozeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.OptionsStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,9 +62,10 @@
             this.snoozeStripMenuItem,
             this.unsnoozeStripMenuItem,
             this.toolStripSeparator1,
+            this.OptionsStripMenuItem,
             this.quitToolStripMenuItem});
             this.trayContextMenu.Name = "trayContextMenu";
-            this.trayContextMenu.Size = new System.Drawing.Size(153, 98);
+            this.trayContextMenu.Size = new System.Drawing.Size(153, 120);
             this.trayContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.trayContextMenu_Opening);
             // 
             // snoozeStripMenuItem
@@ -94,6 +96,13 @@
             this.unsnoozeStripMenuItem.Visible = false;
             this.unsnoozeStripMenuItem.Click += new System.EventHandler(this.unsnoozeStripMenuItem_Click);
             // 
+            // OptionsStripMenuItem
+            // 
+            this.OptionsStripMenuItem.Name = "OptionsStripMenuItem";
+            this.OptionsStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.OptionsStripMenuItem.Text = "Options";
+            this.OptionsStripMenuItem.Click += new System.EventHandler(this.OptionsStripMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -121,6 +130,7 @@
         private System.Windows.Forms.ToolStripMenuItem snoozeStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem unsnoozeStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem OptionsStripMenuItem;
 
     }
 }
