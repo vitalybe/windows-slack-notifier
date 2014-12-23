@@ -5,24 +5,49 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using WebSocketSharp.Server;
+using Timer = System.Windows.Forms.Timer;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace SlackWindowsTray
 {
     public partial class MainWindow : Form
     {
-        private StateService _stateService = StateService.Instance;
+        private WebSocketServer _wssv = new WebSocketServer(4649);
+
+        private bool _animationIconBlink = true;
+        private Timer _animationTimer = new Timer(); 
+        private SlackNotifierStates _lastState = SlackNotifierStates.DisconnectedFromExtension;
+        private bool _isSnoozed = false;
 
         public MainWindow()
         {
             InitializeComponent();
             slackTrayIcon.ContextMenuStrip = trayContextMenu;
 
-            _stateService.OnStateChange += (o, state) => this.UIThread(delegate { ChangeSlackState(state); });
+            _animationTimer.Interval = 500;
+            _animationTimer.Tick += AnimationTimerOnTick;
+            _animationTimer.Enabled = false;
         }
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
+            ChangeSlackState(SlackNotifierStates.DisconnectedFromExtension);
+                
+            _wssv.AddWebSocketService<SlackEndpoint>("/Slack");
+            SlackEndpoint.OnSlackStateChanged += (o, state) => this.UIThread(delegate { ChangeSlackState(state); }); 
+
+            _wssv.Start();
+            if (_wssv.IsListening)
+            {
+                Console.WriteLine("Listening on port {0}, and providing WebSocket services:", _wssv.Port);
+                foreach (var path in _wssv.WebSocketServices.Paths)
+                {
+                    Console.WriteLine("- {0}", path);
+                }
+            }
+
             // Add the notifier to Windows startup:
             try
             {
@@ -32,7 +57,7 @@ namespace SlackWindowsTray
                 string startPath = Assembly.GetExecutingAssembly().Location;
                 currentVersionRunRegKey.SetValue("SlackWindowsTray", '"' + startPath + '"');
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 MessageBox.Show("Failed to add SlackWindowsTray to run on startup: " + ex.Message);
             }
@@ -40,12 +65,38 @@ namespace SlackWindowsTray
 
         private void ChangeSlackState(SlackNotifierStates newState)
         {
-            // Change the icon and the tooltip
-            slackTrayIcon.Text = newState.ToString();
+            _lastState = newState;
 
+            if (_isSnoozed == false)
+            {
+                // Change the icon and the tooltip
+                slackTrayIcon.Text = newState.ToString();
+                ChangeTrayIcon(newState);
+
+                // Start the animation if possible and enabled
+                var canAnimateIcon = newState == SlackNotifierStates.ImportantUnread ||
+                                     newState == SlackNotifierStates.Unread;
+                _animationTimer.Enabled = canAnimateIcon;
+            }
+        }
+
+        private void ChangeTrayIcon(SlackNotifierStates state)
+        {
             var appDir = Path.GetDirectoryName(Application.ExecutablePath);
-            var iconPath = Path.Combine(appDir, "Icons", newState.ToString() + ".ico");
+            var iconPath = Path.Combine(appDir, "Icons", state.ToString() + ".ico");
             slackTrayIcon.Icon = new Icon(iconPath);
+        }
+
+        private void AnimationTimerOnTick(object sender, EventArgs eventArgs)
+        {
+            ChangeTrayIcon(_animationIconBlink ? SlackNotifierStates.AllRead : _lastState);
+
+            _animationIconBlink = !_animationIconBlink;
+        }
+
+        private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _wssv.Stop();
         }
 
         private void slackTrayIcon_DoubleClick(object sender, EventArgs e)
@@ -62,11 +113,14 @@ namespace SlackWindowsTray
             this.Close();
         }
 
-        private async void snoozeStripMenuItem_Click(object sender, EventArgs e)
+        async private void snoozeStripMenuItem_Click(object sender, EventArgs e)
         {
-            snoozeStripMenuItem.Visible = false;
-            await _stateService.Snooze();
-            snoozeStripMenuItem.Visible = true;
+            var lastStateBeforeSnooze = _lastState;
+            ChangeSlackState(SlackNotifierStates.AllRead);
+            _isSnoozed = true;
+            await Task.Delay(TimeSpan.FromSeconds(10));
+            _isSnoozed = false;
+            ChangeSlackState(lastStateBeforeSnooze);
         }
     }
 }
