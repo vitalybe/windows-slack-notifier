@@ -48,9 +48,10 @@ namespace SlackWindowsTray
             // Change the icon and the tooltip
             slackTrayIcon.Text = slackState.TrayState.ToString();
 
-            var appDir = Path.GetDirectoryName(Application.ExecutablePath);
-            var iconPath = Path.Combine(appDir, "Icons", slackState.TrayState + ".ico");
-            slackTrayIcon.Icon = new Icon(iconPath);
+            using (var stream = this.GetType().Assembly.GetManifestResourceStream("SlackWindowsTray.Icons." + slackState.TrayState + ".ico"))
+            {
+                slackTrayIcon.Icon = new Icon(stream);
+            }
         }
 
         private void slackTrayIcon_DoubleClick(object sender, EventArgs e)
