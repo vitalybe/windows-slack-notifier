@@ -34,6 +34,7 @@ namespace SlackWindowsTray
 
                 string startPath = Assembly.GetExecutingAssembly().Location;
                 currentVersionRunRegKey.SetValue("SlackWindowsTray", '"' + startPath + '"');
+                this.Visible = false;
             }
             catch (Exception ex)
             {
