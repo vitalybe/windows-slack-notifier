@@ -38,6 +38,9 @@ namespace SlackWindowsTray
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd);
+
         /// <summary>Find the windows matching the specified class name.</summary>
         private static IEnumerable<IntPtr> WindowsMatching(string className)
         {
@@ -98,7 +101,11 @@ namespace SlackWindowsTray
             var slackChromeWindow = ChromeWindowTitles().Where(windowFinderPredicate).FirstOrDefault();
             if (slackChromeWindow != null)
             {
-                ShowWindow(slackChromeWindow.Hwnd, SW_RESTORE); 
+                if (IsIconic(slackChromeWindow.Hwnd))
+                {
+                    ShowWindow(slackChromeWindow.Hwnd, SW_RESTORE);
+                }
+
                 SetForegroundWindow(slackChromeWindow.Hwnd);
                 return true;
             }

@@ -30,25 +30,15 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            this.lblSlackStatus = new System.Windows.Forms.Label();
             this.slackTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.snoozeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unsnoozeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.OptionsStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayContextMenu.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // lblSlackStatus
-            // 
-            this.lblSlackStatus.AutoSize = true;
-            this.lblSlackStatus.Location = new System.Drawing.Point(106, 60);
-            this.lblSlackStatus.Name = "lblSlackStatus";
-            this.lblSlackStatus.Size = new System.Drawing.Size(35, 13);
-            this.lblSlackStatus.TabIndex = 0;
-            this.lblSlackStatus.Text = "label1";
             // 
             // slackTrayIcon
             // 
@@ -65,50 +55,49 @@
             this.OptionsStripMenuItem,
             this.quitToolStripMenuItem});
             this.trayContextMenu.Name = "trayContextMenu";
-            this.trayContextMenu.Size = new System.Drawing.Size(153, 120);
+            this.trayContextMenu.Size = new System.Drawing.Size(156, 106);
             this.trayContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.trayContextMenu_Opening);
             // 
             // snoozeStripMenuItem
             // 
             this.snoozeStripMenuItem.Name = "snoozeStripMenuItem";
-            this.snoozeStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.snoozeStripMenuItem.Size = new System.Drawing.Size(155, 24);
             this.snoozeStripMenuItem.Text = "Snooze all";
             this.snoozeStripMenuItem.ToolTipText = "Don\'t show unread/mention notifications for a while";
             this.snoozeStripMenuItem.Click += new System.EventHandler(this.snoozeStripMenuItem_Click);
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
-            // 
-            // quitToolStripMenuItem
-            // 
-            this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.quitToolStripMenuItem.Text = "Quit";
-            this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
-            // 
             // unsnoozeStripMenuItem
             // 
             this.unsnoozeStripMenuItem.Name = "unsnoozeStripMenuItem";
-            this.unsnoozeStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.unsnoozeStripMenuItem.Size = new System.Drawing.Size(155, 24);
             this.unsnoozeStripMenuItem.Text = "Unsooze all";
             this.unsnoozeStripMenuItem.Visible = false;
             this.unsnoozeStripMenuItem.Click += new System.EventHandler(this.unsnoozeStripMenuItem_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(152, 6);
+            // 
             // OptionsStripMenuItem
             // 
             this.OptionsStripMenuItem.Name = "OptionsStripMenuItem";
-            this.OptionsStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.OptionsStripMenuItem.Size = new System.Drawing.Size(155, 24);
             this.OptionsStripMenuItem.Text = "Options";
             this.OptionsStripMenuItem.Click += new System.EventHandler(this.OptionsStripMenuItem_Click);
+            // 
+            // quitToolStripMenuItem
+            // 
+            this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(155, 24);
+            this.quitToolStripMenuItem.Text = "Quit";
+            this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(268, 126);
-            this.Controls.Add(this.lblSlackStatus);
             this.Name = "MainWindow";
             this.ShowInTaskbar = false;
             this.Text = "Form1";
@@ -117,13 +106,11 @@
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.trayContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Label lblSlackStatus;
         private System.Windows.Forms.NotifyIcon slackTrayIcon;
         private System.Windows.Forms.ContextMenuStrip trayContextMenu;
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
