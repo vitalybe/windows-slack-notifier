@@ -14,6 +14,8 @@ No unread messages:
 Usage instructions
 --
 
+**NOTE:** If you have a Chrome extension from v1 it must be removed manually and the [new version](https://chrome.google.com/webstore/detail/todoist-to-do-list-and-ta/ipmkjncjnjpookgagldhnehgdihdppkb) installed instead.
+
 1. Install the extension to Chrome: [Slack Notifier - Chrome extension](https://chrome.google.com/webstore/detail/slack-windows-tray-notifi/ipmkjncjnjpookgagldhnehgdihdppkb)
 1. Download, unzup and run: [SlackTray.zip](https://github.com/vitalybe/windows-slack-notifier/releases/download/v2.0/SlackTray.v2.0.zip)
 1. Optional, but highly suggested:<br>If Slack isn't a pinned app already, follow the directions for **Chrome** in [Slack's apps page](https://tu-go.slack.com/apps)
