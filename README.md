@@ -4,12 +4,20 @@ Windows Slack Notifier
 This is an application that allows you to recieve notification from Slack on Windows.
 
 Important unread messages:
+
 ![Important unread messages](http://i.imgur.com/fUVPxGv.png)
 
 No unread messages:
+
 ![No unread messages](http://i.imgur.com/kPBvqCj.png)
 
+Snoozing (all or induvidual channels):
 
+![Snoozing](http://i.imgur.com/we3OiYk.png)
+
+Options:
+
+![Options](http://i.imgur.com/9I0qg3n.png)
 
 Usage instructions
 --
