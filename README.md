@@ -13,7 +13,7 @@ No unread messages:
 
 Snoozing (all or induvidual channels):
 
-![Snoozing](http://i.imgur.com/we3OiYk.png)
+![Snoozing](http://i.imgur.com/T2gzvWA.png)
 
 Options:
 
