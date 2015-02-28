@@ -113,8 +113,7 @@
     setInterval(function () {
         if(Date.now() - lastAlertMessageTime >= 5000) {
             setBadge("Disconnected from Slack tab", "000000");
-            websocket.send(-1);
-            lastMessage = -1;
+            lastMessage = null;
         }
     }, 5000);
 
