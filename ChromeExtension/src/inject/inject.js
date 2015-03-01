@@ -1,6 +1,14 @@
 (function() {
 
-	function getChats(kind) {
+    function notification() {
+
+        var notificationElement = document.createElement("div");
+        notificationElement.innerHTML = "<h4>Update required - Slack Windows Tray</h4><p>OKAY</p>";
+        notificationElement.id = "windows-tray-notification";
+        document.querySelector("body").appendChild(notificationElement);
+    }
+
+    function getChats(kind) {
 		return Array.prototype.slice.call(document.querySelectorAll("#channels_scroller li." + kind));
 	}
 
@@ -23,7 +31,7 @@
                 name: channelName,
                 unread: element.classList.contains("unread"),
                 mention: element.classList.contains("mention")
-            }
+            };
         });
 
         chrome.extension.sendMessage(chatStatus);

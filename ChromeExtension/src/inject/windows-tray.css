@@ -1,0 +1,19 @@
+﻿#windows-tray-notification {
+    width: 500px;
+
+	position: absolute;
+	top: 20px;
+	z-index: 999;
+    padding: 20px;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	border-radius: 4px;
+	background-color: #fcf8e3;
+	border: 1px solid #faebcc;
+}
+
+#windows-tray-notification p
+{
+    margin: 0;
+}

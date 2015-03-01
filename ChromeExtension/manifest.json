@@ -31,7 +31,10 @@
             ],
             "js": [
                 "src/inject/inject.js"
-            ]
+            ],
+			"css": [
+                "src/inject/windows-tray.css"
+			]
         }
     ]
 }
