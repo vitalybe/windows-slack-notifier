@@ -14,6 +14,14 @@ namespace SlackWindowsTray
         protected override void OnOpen()
         {
             OnSlackStateChanged(this, new SlackState(TrayStates.AllRead));
+            var message = new
+                {
+                    command = "version",
+                    body = "1.2"
+                };
+
+
+            this.Send(JsonConvert.SerializeObject(message));
         }
 
         protected override void OnMessage(MessageEventArgs e)

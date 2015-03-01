@@ -32,7 +32,7 @@
         if (lastSender) {
             chrome.tabs.update(lastSender.tab.id, {selected: true});
         } else {
-            alert("No active Slack tab is found. Please open/reload one manually.")
+            alert("No active Slack tab is found. Please open/reload one manually.");
         }
     }
 
@@ -49,7 +49,21 @@
         };
         websocket.onclose = function (evt) {
             //try to reconnect in 5 seconds
-            setTimeout(function () {connect() }, 5000);
+            setTimeout(function () { connect(); }, 5000);
+        };
+
+        websocket.onmessage = function(evt) {
+            evt.data = JSON.parse(evt.data);
+            var command = evt.data.command;
+            
+            if (command === "version") {
+                var appVersion = evt.data.body;
+                var extensionVersion = chrome.runtime.getManifest().version;
+                
+                if (appVersion != extensionVersion) {
+                    
+                }
+            }
         };
     }
 
