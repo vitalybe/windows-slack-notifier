@@ -14,22 +14,23 @@ namespace SlackWindowsTray
         protected override void OnOpen()
         {
             OnSlackStateChanged(this, new SlackState(TrayStates.AllRead));
-            var message = new
-                {
-                    command = "version",
-                    body = "1.2"
-                };
-
-
-            this.Send(JsonConvert.SerializeObject(message));
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            var chatStateList = JsonConvert.DeserializeObject<List<ChatState>>(e.Data);
-            SlackState slackState = new SlackState(chatStateList);
-
-            OnSlackStateChanged(this, slackState);
+            dynamic message = JsonConvert.DeserializeObject(e.Data);
+            if (message.command == "chat-state")
+            {
+                var bodyString = JsonConvert.SerializeObject(message.body);
+                var chatStateList = JsonConvert.DeserializeObject<List<ChatState>>(bodyString);
+                SlackState slackState = new SlackState(chatStateList);
+                OnSlackStateChanged(this, slackState);
+            }
+            else if (message.command == "version")
+            {
+                message.body = "1.2.3";
+                this.Send(JsonConvert.SerializeObject(message));
+            }
         }
 
         protected override void OnClose(CloseEventArgs e)
