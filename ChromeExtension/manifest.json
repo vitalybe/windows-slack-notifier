@@ -11,6 +11,8 @@
     },
     "background": {
         "scripts": [
+            "src/lib/q.js",
+            "src/lib/lodash.min.js",
             "src/bg/background.js"
         ],
         "persistent": true
@@ -30,6 +32,8 @@
                 "https://*.slack.com/*"
             ],
             "js": [
+                "src/lib/q.js",
+                "src/lib/lodash.min.js",
                 "src/inject/inject.js"
             ],
 			"css": [
