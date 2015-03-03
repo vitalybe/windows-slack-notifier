@@ -6,6 +6,8 @@
     var waitingCommandRequests = [];
     var notificationElement = null;
 
+    var connected = false;
+
     
     function log(message) {
         chrome.runtime.sendMessage({ type: "log", message: message }, function (response) {
@@ -54,7 +56,12 @@
         return uuid;
     };
 
-    function sendUpdate() {
+    function sendUpdatesWhileConnected() {
+
+        setTimeout(sendUpdatesWhileConnected, 5000);
+        if (!connected) {
+            return;
+        }
 
         var allChats = getChats("channel");
         allChats = allChats.concat(getChats("group"));
@@ -76,8 +83,10 @@
             };
         });
 
-        chrome.extension.sendMessage(chatStatus);
-
+        port.postMessage({
+            command: "chat-state",
+            body: chatStatus
+        });
     }
     
 
@@ -116,6 +125,7 @@
     function onPortDisconnect() {
         log("onPortDisconnect - Port disconnected, queuing to reconnect in " + RECONNECT_AFTER_MS + "ms");
         port = null;
+        connected = false;
         // Reconnect after X seconds
         setTimeout(connect, RECONNECT_AFTER_MS);
 
@@ -140,9 +150,13 @@
     // Sends a messages and resolves when connected
     function connect() {
         log("connect - Connecting...");
+
         port = chrome.runtime.connect({ name: getSubdomain() });
+        port.onDisconnect.addListener(onPortDisconnect);
+        port.onMessage.addListener(onPortMessage);
+
         var extensionVersion = chrome.runtime.getManifest().version;
-        waitForCommand("connected")
+        return waitForCommand("connected")
             .then(function() {
                 log("connect - Connected. Requesting version...");
                 return sendCommandWaitReply("version").catch(function() {
@@ -155,24 +169,28 @@
                         '<p>Download the latest version <a href="https://github.com/vitalybe/windows-slack-notifier/releases">here</a>, ' +
                         'run it and refresh Slack.</p>'
                         );
+
+                    throw new Error("Failed to connect");
                 });
             })
             .then(function(versionReply) {
                 var appVersion = versionReply.body;
                 log("connect - App version: " + appVersion);
                 log("connect - Extension version: " + extensionVersion);
-                if (appVersion !== extensionVersion) {
+                if (appVersion === extensionVersion) {
+                    log("connect - Versions match, connected successfully");
+                    connected = true;
+                } else {
                     log("connect - Versions mismatch, showing notification");
-                    notification("Update required", 
+                    notification("Update required",
                         "<p><b>Extension version</b>: " + extensionVersion + "</p>" +
                         "<p><b>App version</b>: " + appVersion + "</p>"
-                        );
+                    );
                 }
             });
-        port.onDisconnect.addListener(onPortDisconnect);
-        port.onMessage.addListener(onPortMessage);
     }
 
     connect();
+    sendUpdatesWhileConnected();
 
 })();
