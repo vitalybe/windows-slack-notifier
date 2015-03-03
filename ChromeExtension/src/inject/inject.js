@@ -132,8 +132,14 @@
                 return sendCommandWaitReply("version");
             })
             .then(function (versionReply) {
-                var version = versionReply.body;
-                log("connect - Given app version: " + version);
+                var appVersion = versionReply.body;
+                var extensionVersion = chrome.runtime.getManifest().version;
+                log("connect - App version: " + appVersion);
+                log("connect - Extension version: " + extensionVersion);
+                if (appVersion !== extensionVersion) {
+                    log("connect - Versions mismatch, showing notification");
+                    notification();
+                }
             });
         port.onDisconnect.addListener(onPortDisconnect);
         port.onMessage.addListener(onPortMessage);

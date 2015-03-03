@@ -67,8 +67,9 @@
 
     function onAppDisconnect() {
         log("onAppDisconnect - Disconnecting all connected tab ports");
+        appConnectionPromise = null;
 
-        _.each(connectedPorts, function(portName, port) {
+        _.each(connectedPorts, function (port, portName) {
             log("onAppDisconnect - Disconnecting: " + portName);
             port.disconnect();
         });

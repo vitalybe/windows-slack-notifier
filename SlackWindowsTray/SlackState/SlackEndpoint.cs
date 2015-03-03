@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -28,7 +29,9 @@ namespace SlackWindowsTray
             }
             else if (message.command == "version")
             {
-                message.body = "1.2.3";
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+
+                message.body = string.Format("{0}.{1}", version.Major, version.Minor);
                 this.Send(JsonConvert.SerializeObject(message));
             }
         }
