@@ -13,7 +13,22 @@
 	border: 1px solid #faebcc;
 }
 
-#windows-tray-notification p
+#windows-tray-notification .close-notification {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+    border-radius: 50%;
+    box-shadow: 0 0 3pt 2pt rgb(250, 235, 204);
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+    background: white;
+
+    line-height: 20px;
+    text-align: center;
+}
+
+#windows-tray-notification p:last-child
 {
     margin: 0;
 }

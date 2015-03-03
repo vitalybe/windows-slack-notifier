@@ -4,6 +4,8 @@
 
     var port = null;
     var waitingCommandRequests = [];
+    var notificationElement = null;
+
     
     function log(message) {
         chrome.runtime.sendMessage({ type: "log", message: message }, function (response) {
@@ -17,12 +19,25 @@
         return window.location.hostname.replace(urlParts[0], '').slice(0, -1);
     }
 
-    function notification() {
 
-        var notificationElement = document.createElement("div");
-        notificationElement.innerHTML = "<h4>Update required - Slack Windows Tray</h4><p>OKAY</p>";
-        notificationElement.id = "windows-tray-notification";
-        document.querySelector("body").appendChild(notificationElement);
+    function notification(title, content) {
+        if (!notificationElement) {
+            notificationElement = document.createElement("div");
+            var notificationClose = document.createElement("div");
+            notificationClose.className = "close-notification";
+            notificationClose.innerText = "x";
+            notificationClose.onclick = function() {
+                document.querySelector("body").removeChild(notificationElement);
+            };
+
+            notificationElement.id = "windows-tray-notification";
+            notificationElement.innerHTML = '<div class="title"></div><div class="content"></div>';
+            notificationElement.appendChild(notificationClose);
+            document.querySelector("body").appendChild(notificationElement);
+        }
+
+        notificationElement.querySelector(".title").innerHTML = "<h3>" + title + " - Slack Windows Tray</h3>";
+        notificationElement.querySelector(".content").innerHTML = content;
     }
 
     function getChats(kind) {
@@ -106,7 +121,7 @@
 
         _.each(waitingCommandRequests, function(request) {
             log("onPortDisconnect - Rejecting a waiting request: " + request);
-            request.reject();
+            request.deferred.reject();
         });
     }
 
@@ -126,19 +141,32 @@
     function connect() {
         log("connect - Connecting...");
         port = chrome.runtime.connect({ name: getSubdomain() });
+        var extensionVersion = chrome.runtime.getManifest().version;
         waitForCommand("connected")
-            .then(function () {
+            .then(function() {
                 log("connect - Connected. Requesting version...");
-                return sendCommandWaitReply("version");
+                return sendCommandWaitReply("version").catch(function() {
+                    log("connect - Disconnected after requesting a version, probably old app version");
+                    // This will occur when the app closed the connection after the `version` command was sent
+                    // It is probably that it will happen due to an old version
+                    notification("Update possibly required",
+                        "<p>Failed to get app version, this might be due to an older version.</p>" +
+                        "<p><b>Extension version</b>: " + extensionVersion + "</p>" +
+                        '<p>Download the latest version <a href="https://github.com/vitalybe/windows-slack-notifier/releases">here</a>, ' +
+                        'run it and refresh Slack.</p>'
+                        );
+                });
             })
-            .then(function (versionReply) {
+            .then(function(versionReply) {
                 var appVersion = versionReply.body;
-                var extensionVersion = chrome.runtime.getManifest().version;
                 log("connect - App version: " + appVersion);
                 log("connect - Extension version: " + extensionVersion);
                 if (appVersion !== extensionVersion) {
                     log("connect - Versions mismatch, showing notification");
-                    notification();
+                    notification("Update required", 
+                        "<p><b>Extension version</b>: " + extensionVersion + "</p>" +
+                        "<p><b>App version</b>: " + appVersion + "</p>"
+                        );
                 }
             });
         port.onDisconnect.addListener(onPortDisconnect);
