@@ -130,9 +130,12 @@
         setTimeout(connect, RECONNECT_AFTER_MS);
 
         _.each(waitingCommandRequests, function(request) {
-            log("onPortDisconnect - Rejecting a waiting request: " + request);
+            log("onPortDisconnect - Rejecting a waiting request: " + JSON.stringify(request));
             request.deferred.reject();
         });
+
+        log("onPortDisconnect - Clearing all waiting requests");
+        waitingCommandRequests.length = 0;
     }
 
     function onPortMessage(message) {
