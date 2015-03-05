@@ -22,6 +22,8 @@ namespace SlackWindowsTray
 
             _stateService.OnStateChange += (o, state) => this.UIThread(delegate { ChangeSlackState(state); });
             _stateService.OnSnoozeFinished += StateServiceOnOnSnoozeFinished;
+
+            ChangeSlackState(new SlackState(TrayStates.DisconnectedFromExtension));
         }
 
         private void MainWindow_Load(object sender, EventArgs e)

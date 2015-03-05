@@ -20,8 +20,6 @@ namespace SlackWindowsTray
             _processorsChain.AddProcessor(new StateAnimationProcessor());
             _processorsChain.AddProcessor(_snoozingProcessor);
 
-            _processorsChain.HandleState(new SlackState(TrayStates.DisconnectedFromExtension));
-
             ConnectionToExtension();
         }
 
