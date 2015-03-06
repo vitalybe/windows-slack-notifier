@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SlackWindowsTray
@@ -24,6 +17,8 @@ namespace SlackWindowsTray
 
             chkToBlinkUnread.Checked = SlackWindowsTray.Default.ToBlinkOnUnread;
             chkToBlinkMention.Checked = SlackWindowsTray.Default.ToBlinkOnMention;
+
+            txtSlackToken.Text = SlackWindowsTray.Default.SlackToken;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -36,7 +31,10 @@ namespace SlackWindowsTray
                 SlackWindowsTray.Default.ToBlinkOnUnread = chkToBlinkUnread.Checked;
                 SlackWindowsTray.Default.ToBlinkOnMention = chkToBlinkMention.Checked;
 
+                SlackWindowsTray.Default.SlackToken = txtSlackToken.Text;
+
                 SlackWindowsTray.Default.Save();
+
                 this.Close();
             }
             catch (FormatException exception)
@@ -48,6 +46,11 @@ namespace SlackWindowsTray
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void linkGenerateToken_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+
         }
     }
 }

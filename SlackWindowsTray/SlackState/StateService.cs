@@ -6,12 +6,16 @@ namespace SlackWindowsTray
 {
     class StateService
     {
-        private readonly WebSocketServer _wssv = new WebSocketServer(4649);
-        private readonly SnoozingProcessor _snoozingProcessor;
-        private readonly StateProcessorsChain _processorsChain;
+        private WebSocketServer _wssv = new WebSocketServer(4649);
+        private SnoozingProcessor _snoozingProcessor;
+        private StateProcessorsChain _processorsChain;
         private SlackState _lastSlackState;
 
         private StateService()
+        {
+        }
+
+        public void Start()
         {
             _snoozingProcessor = new SnoozingProcessor(() => OnSnoozeFinished(this, null));
 

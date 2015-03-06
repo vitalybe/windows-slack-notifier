@@ -41,10 +41,15 @@
             this.chkToBlinkUnread = new System.Windows.Forms.CheckBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.linkGenerateToken = new System.Windows.Forms.LinkLabel();
+            this.txtSlackToken = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -53,7 +58,7 @@
             this.groupBox1.Controls.Add(this.txtSnoozeAllMinutes);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(13, 13);
+            this.groupBox1.Location = new System.Drawing.Point(13, 106);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(223, 80);
             this.groupBox1.TabIndex = 0;
@@ -98,7 +103,7 @@
             this.groupBox2.Controls.Add(this.pictureBox1);
             this.groupBox2.Controls.Add(this.chkToBlinkMention);
             this.groupBox2.Controls.Add(this.chkToBlinkUnread);
-            this.groupBox2.Location = new System.Drawing.Point(14, 111);
+            this.groupBox2.Location = new System.Drawing.Point(14, 204);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(223, 80);
             this.groupBox2.TabIndex = 1;
@@ -145,7 +150,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(81, 203);
+            this.btnSave.Location = new System.Drawing.Point(81, 296);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 2;
@@ -155,7 +160,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(162, 203);
+            this.btnCancel.Location = new System.Drawing.Point(162, 296);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 3;
@@ -163,11 +168,55 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.linkGenerateToken);
+            this.groupBox3.Controls.Add(this.txtSlackToken);
+            this.groupBox3.Controls.Add(this.label4);
+            this.groupBox3.Location = new System.Drawing.Point(14, 12);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(223, 88);
+            this.groupBox3.TabIndex = 4;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Slack token";
+            // 
+            // linkGenerateToken
+            // 
+            this.linkGenerateToken.AutoSize = true;
+            this.linkGenerateToken.LinkArea = new System.Windows.Forms.LinkArea(17, 4);
+            this.linkGenerateToken.Location = new System.Drawing.Point(10, 68);
+            this.linkGenerateToken.Name = "linkGenerateToken";
+            this.linkGenerateToken.Size = new System.Drawing.Size(120, 17);
+            this.linkGenerateToken.TabIndex = 4;
+            this.linkGenerateToken.TabStop = true;
+            this.linkGenerateToken.Text = "Generate a token here.";
+            this.linkGenerateToken.UseCompatibleTextRendering = true;
+            this.linkGenerateToken.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkGenerateToken_LinkClicked);
+            // 
+            // txtSlackToken
+            // 
+            this.txtSlackToken.Location = new System.Drawing.Point(10, 42);
+            this.txtSlackToken.Name = "txtSlackToken";
+            this.txtSlackToken.PasswordChar = '*';
+            this.txtSlackToken.Size = new System.Drawing.Size(201, 20);
+            this.txtSlackToken.TabIndex = 3;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.Color.DarkRed;
+            this.label4.Location = new System.Drawing.Point(7, 23);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(93, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Valid Slack token:";
+            // 
             // OptionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(249, 238);
+            this.ClientSize = new System.Drawing.Size(249, 333);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.groupBox2);
@@ -184,6 +233,8 @@
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -202,5 +253,9 @@
         private System.Windows.Forms.CheckBox chkToBlinkUnread;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.LinkLabel linkGenerateToken;
+        private System.Windows.Forms.TextBox txtSlackToken;
+        private System.Windows.Forms.Label label4;
     }
 }

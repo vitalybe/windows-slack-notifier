@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SlackWindowsTray
@@ -16,7 +13,23 @@ namespace SlackWindowsTray
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow());
+
+            if (string.IsNullOrWhiteSpace(SlackWindowsTray.Default.SlackToken))
+            {
+                var form = new OptionsForm();
+                form.StartPosition = FormStartPosition.CenterScreen;
+                form.ShowDialog();
+            }
+
+            if (string.IsNullOrWhiteSpace(SlackWindowsTray.Default.SlackToken))
+            {
+                MessageBox.Show("Valid slack token must be set to continue. Application will now quit",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                Application.Run(new MainWindow());
+            }
         }
     }
 }
