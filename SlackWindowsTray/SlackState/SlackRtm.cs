@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EasyHttp.Http;
 using Newtonsoft.Json;
@@ -11,9 +12,8 @@ namespace SlackWindowsTray
     class SlackRtm
     {
         private WebSocket _webSocket = null;
-        private Dictionary<string, string> _channels = new Dictionary<string, string>();
-        private Dictionary<string, string> _users = new Dictionary<string, string>();
-        private Dictionary<string, string> _groups = new Dictionary<string, string>();
+        // Channels, groups, users - ID and name
+        private Dictionary<string, string> _slackObjects = new Dictionary<string, string>();
 
         public static readonly SlackRtm Instance = new SlackRtm();
         private SlackRtm()
@@ -27,14 +27,13 @@ namespace SlackWindowsTray
 
         private void ConnectRtm()
         {
-            var rtmInfo = StartRtm();
+            var rtmInfo = SlackApiCall("rtm.start");
             ConnectWebSocket(rtmInfo.url.Value);
         }
 
-
-        private static dynamic StartRtm()
+        private static dynamic SlackApiCall(string apiName)
         {
-            var url = string.Format("https://slack.com/api/rtm.start?token={0}", SlackWindowsTray.Default.SlackToken);
+            var url = string.Format("https://slack.com/api/{0}?token={1}", apiName, SlackWindowsTray.Default.SlackToken);
 
             var http = new HttpClient();
             var response = http.Get(url);
@@ -44,9 +43,90 @@ namespace SlackWindowsTray
         private void ConnectWebSocket(string url)
         {
             _webSocket = new WebSocket(url);
-            _webSocket.OnMessage += (sender, e) => Console.WriteLine ("Laputa says: " + e.Data);
+            _webSocket.OnMessage += OnSocketMessage;
             _webSocket.OnClose += (sender, e) => Console.WriteLine("Connection closed: " + e.Reason);
             _webSocket.Connect ();
         }
+
+        private void OnSocketMessage(object sender, MessageEventArgs e)
+        {
+            dynamic message = JsonConvert.DeserializeObject(e.Data);
+            if (message.type == "message")
+            {
+                var channelName = SlackIdToName(message.channel.Value);
+                var user = SlackIdToName(message.user.Value);
+                
+                Regex messageIdRegex = new Regex("<@([A-Z0-9]+)>");
+                string text = message.text.Value;
+                text = messageIdRegex.Replace(text, match =>
+                {
+                    var id = match.Groups[1].Value;
+                    return SlackIdToName(id);
+                });
+
+                Console.WriteLine("[{0}] {1}: {2}", channelName, user, text);
+            }
+        }
+
+        private string SlackIdToName(string id)
+        {
+            if (!_slackObjects.ContainsKey(id))
+            {
+                RefreshAll();
+            }
+
+            var name = "UNKNOWN";
+            if (_slackObjects.ContainsKey(id))
+            {
+                name = _slackObjects[id];
+            }
+
+            return name;
+        }
+
+        private bool isRefreshing = false;
+        private void RefreshAll()
+        {
+            if (isRefreshing)
+            {
+                // Prevent recursion
+                return;
+            }
+
+            isRefreshing = true;
+            try
+            {
+                _slackObjects.Clear();
+                _slackObjects.Add("USLACKBOT", "slackbot");
+
+                RefreshData("channels.list", "channels", "#");
+                RefreshData("users.list", "members");
+                RefreshData("groups.list", "groups");
+                RefreshImData();
+            }
+            finally
+            {
+                isRefreshing = false;
+            }
+        }
+
+        private void RefreshData(string api, string collectionName, string prefix = "")
+        {
+            var dataCollection = SlackApiCall(api)[collectionName];
+            foreach (dynamic data in dataCollection)
+            {
+                _slackObjects.Add(data.id.Value, prefix + data.name.Value);
+            }
+        }
+
+        private void RefreshImData()
+        {
+            var dataCollection = SlackApiCall("im.list")["ims"];
+            foreach (dynamic data in dataCollection)
+            {
+                _slackObjects.Add(data.id.Value, SlackIdToName(data.user.Value));
+            }
+        }
+
     }
 }
