@@ -98,7 +98,8 @@ namespace SlackWindowsTray
             }
             else
             {
-                foreach (var chatName in _snoozedChats.Keys)
+                List<string> chatNames = _snoozedChats.Keys.Select(chatName => chatName).ToList();
+                foreach (var chatName in chatNames)
                 {
                     SnoozeChat(_lastSlackState, chatName);
                 }
