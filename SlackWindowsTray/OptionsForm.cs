@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace SlackWindowsTray
@@ -50,7 +51,7 @@ namespace SlackWindowsTray
 
         private void linkGenerateToken_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-
+            Process.Start("https://api.slack.com/web");
         }
     }
 }
