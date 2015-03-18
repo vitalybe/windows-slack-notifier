@@ -165,6 +165,12 @@
     <EmbeddedResource Include="Icons\DisconnectedFromExtension.ico" />
     <EmbeddedResource Include="Icons\DisconnectedFromSlack.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToastNotifications\ToastNotifications.csproj">
+      <Project>{380d8d88-386c-4c50-9a54-800f79fdf7d2}</Project>
+      <Name>ToastNotifications</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
