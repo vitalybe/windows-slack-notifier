@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using System.IO;
 using System.Linq;
+using ToastNotifications;
 
 namespace SlackWindowsTray
 {
@@ -145,6 +146,12 @@ namespace SlackWindowsTray
 
         private void OptionsStripMenuItem_Click(object sender, EventArgs e)
         {
+            new ToastNotifications.FormAnimator(this);
+            var toastNotification = new Notification("a", "b",
+                -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
+
+            toastNotification.Show();
+
             OptionsForm form = new OptionsForm();
             form.ShowDialog();
             _stateService.Refresh();

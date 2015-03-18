@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EasyHttp.Http;
 using Newtonsoft.Json;
+using ToastNotifications;
 using WebSocketSharp;
 
 namespace SlackWindowsTray
@@ -63,6 +64,10 @@ namespace SlackWindowsTray
                     var id = match.Groups[1].Value;
                     return SlackIdToName(id);
                 });
+
+                var toastNotification = new Notification(channelName, string.Format("{0}: {1}", user, text), 
+                    -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
+                toastNotification.Show();
 
                 Console.WriteLine("[{0}] {1}: {2}", channelName, user, text);
             }
