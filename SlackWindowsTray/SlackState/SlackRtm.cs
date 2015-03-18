@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using EasyHttp.Http;
 using Newtonsoft.Json;
 using ToastNotifications;
@@ -21,8 +22,9 @@ namespace SlackWindowsTray
         {
         }
 
-        public void Start()
+        public void Start(Form owner)
         {
+            _owner = owner;
             Task.Factory.StartNew(ConnectRtm);
         }
 
@@ -65,9 +67,12 @@ namespace SlackWindowsTray
                     return SlackIdToName(id);
                 });
 
-                var toastNotification = new Notification(channelName, string.Format("{0}: {1}", user, text), 
-                    -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
-                toastNotification.Show();
+                _owner.UIThread(delegate()
+                {
+                    var toastNotification = new Notification(channelName, string.Format("{0}: {1}", user, text),
+                        -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
+                    toastNotification.Show();
+                });
 
                 Console.WriteLine("[{0}] {1}: {2}", channelName, user, text);
             }
@@ -90,6 +95,8 @@ namespace SlackWindowsTray
         }
 
         private bool isRefreshing = false;
+        private Form _owner;
+
         private void RefreshAll()
         {
             if (isRefreshing)
