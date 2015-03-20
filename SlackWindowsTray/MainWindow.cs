@@ -13,11 +13,17 @@ namespace SlackWindowsTray
 {
     public partial class MainWindow : Form
     {
+        // Used for easy access to UIThread
+        private static Form _form;
+        public static Form Form { get { return _form; } }
+
         private StateService _stateService = StateService.Instance;
         private SlackState _lastSlackState;
 
         public MainWindow()
         {
+            _form = this;
+
             InitializeComponent();
             slackTrayIcon.ContextMenuStrip = trayContextMenu;
 
@@ -25,7 +31,7 @@ namespace SlackWindowsTray
             _stateService.OnSnoozeFinished += StateServiceOnOnSnoozeFinished;
 
             _stateService.Start();
-            SlackRtm.Instance.Start(this);
+            SlackRtm.Instance.Start();
 
             ChangeSlackState(new SlackState(TrayStates.DisconnectedFromExtension));
         }

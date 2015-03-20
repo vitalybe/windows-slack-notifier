@@ -22,9 +22,8 @@ namespace SlackWindowsTray
         {
         }
 
-        public void Start(Form owner)
+        public void Start()
         {
-            _owner = owner;
             Task.Factory.StartNew(ConnectRtm);
         }
 
@@ -67,7 +66,7 @@ namespace SlackWindowsTray
                     return SlackIdToName(id);
                 });
 
-                _owner.UIThread(delegate()
+                MainWindow.Form.UIThread(delegate()
                 {
                     var toastNotification = new Notification(channelName, string.Format("{0}: {1}", user, text),
                         -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
