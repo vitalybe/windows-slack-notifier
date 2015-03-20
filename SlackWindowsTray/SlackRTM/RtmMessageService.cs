@@ -77,25 +77,29 @@ namespace SlackWindowsTray
 
         public void OnMessage(dynamic message)
         {
-            var channelName = SlackIdToName(message.channel.Value);
-            var user = SlackIdToName(message.user.Value);
-
-            Regex messageIdRegex = new Regex("<@([A-Z0-9]+)>");
-            string text = message.text.Value;
-            text = messageIdRegex.Replace(text, match =>
+            try
             {
-                var id = match.Groups[1].Value;
-                return SlackIdToName(id);
-            });
+                var channelName = SlackIdToName(message.channel.Value);
+                var user = SlackIdToName(message.user.Value);
 
-            MainWindow.Form.UIThread(delegate()
-            {
+                Regex messageIdRegex = new Regex("<@([A-Z0-9]+)>");
+                string text = message.text.Value;
+                text = messageIdRegex.Replace(text, match =>
+                {
+                    var id = match.Groups[1].Value;
+                    return SlackIdToName(id);
+                });
+
+                Log.Write(string.Format("Parsed message: [{0}] {1}: {2}", channelName, user, text));
+
                 var toastNotification = new Notification(channelName, string.Format("{0}: {1}", user, text),
                     -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
-                toastNotification.Show();
-            });
-
-            Console.WriteLine("[{0}] {1}: {2}", channelName, user, text);
+                MainWindow.Form.UIThread(delegate() { toastNotification.Show(); });
+            }
+            catch (Exception e)
+            {
+                Log.Write("ERROR: Failed to display message: " + e.Message);
+            }
         }
 
         public static readonly RtmMessageService Instance = new RtmMessageService();

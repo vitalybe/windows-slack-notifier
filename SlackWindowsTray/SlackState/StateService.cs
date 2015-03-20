@@ -35,10 +35,10 @@ namespace SlackWindowsTray
             _wssv.Start();
             if (_wssv.IsListening)
             {
-                Console.WriteLine("Listening on port {0}, and providing WebSocket services:", _wssv.Port);
+                Log.Write(string.Format("Listening on port {0}, and providing WebSocket services:", _wssv.Port));
                 foreach (var path in _wssv.WebSocketServices.Paths)
                 {
-                    Console.WriteLine("- {0}", path);
+                    Log.Write(string.Format("- {0}", path));
                 }
             }
         }

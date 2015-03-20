@@ -45,6 +45,8 @@ namespace SlackWindowsTray
             dynamic message = JsonConvert.DeserializeObject(e.Data);
             if (message.type == "message")
             {
+                Log.Write("Recieved message: " + e.Data);
+
                 RtmMessageService.Instance.OnMessage(message);
             }
         }
