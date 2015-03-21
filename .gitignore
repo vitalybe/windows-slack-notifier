@@ -4,3 +4,5 @@ SlackWindowsTray/bin/
 *.suo
 SlackWindowsTray/SlackWindowsTray.csproj.DotSettings
 SlackWindowsTray/SlackWindowsTray.csproj.user
+ToastNotifications/obj/
+ToastNotifications/bin/
