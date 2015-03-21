@@ -14,6 +14,7 @@ namespace ToastNotifications
         private bool _allowFocus;
         private readonly FormAnimator _animator;
         private IntPtr _currentForegroundWindow;
+        private List<string> messages = new List<string>();
 
         /// <summary>
         /// 
@@ -23,7 +24,7 @@ namespace ToastNotifications
         /// <param name="duration"></param>
         /// <param name="animation"></param>
         /// <param name="direction"></param>
-        public Notification(string title, string body, int duration, FormAnimator.AnimationMethod animation, FormAnimator.AnimationDirection direction)
+        public Notification(string title, int duration, FormAnimator.AnimationMethod animation, FormAnimator.AnimationDirection direction)
         {
             InitializeComponent();
 
@@ -34,7 +35,6 @@ namespace ToastNotifications
 
             lifeTimer.Interval = duration;
             labelTitle.Text = title;
-            labelBody.Text = body;
 
             _animator = new FormAnimator(this, animation, direction, 500);
 
@@ -55,6 +55,54 @@ namespace ToastNotifications
             _currentForegroundWindow = NativeMethods.GetForegroundWindow();
 
             base.Show();
+        }
+
+        private string LimitLines(string text, int linesCount)
+        {
+            var graphics = CreateGraphics();
+            var controlSize = new SizeF(labelBody.Width, labelBody.Height);
+
+            var lineHeight = graphics.MeasureString(".", labelBody.Font, controlSize).Height;
+            while (graphics.MeasureString(text, labelBody.Font, controlSize).Height > (lineHeight * linesCount))
+            {
+                text = text.Substring(0, text.Length - 1);
+                text = text.Substring(0, text.Length - 3);
+                text += "...";
+            }
+
+            return text;
+        }
+
+        private double CountLines(string text)
+        {
+            var graphics = CreateGraphics();
+            var controlSize = new SizeF(labelBody.Width, labelBody.Height);
+
+            var lineHeight = graphics.MeasureString(".", labelBody.Font, controlSize).Height;
+            return Math.Round(graphics.MeasureString(text, labelBody.Font, controlSize).Height/lineHeight);
+        }
+
+        public void AddMessage(string message)
+        {
+            // All the existing chat messages are limited to 1 message
+            for (int i = 0; i < messages.Count; i++)
+            {
+                messages[i] = LimitLines(messages[i], 1);
+            }
+
+            // Limit it total line count to show a bit more (because it is a new message)
+            message = LimitLines(message, 3);
+
+            // If the amount of messages is full, remove the oldest one
+            while (CountLines(message) + messages.Count > 5)
+            {
+                messages.RemoveAt(0);
+            }
+
+            // Add the newest message
+            messages.Add(message);
+            
+            labelBody.Text = string.Join(Environment.NewLine, messages);
         }
 
         #endregion // Methods

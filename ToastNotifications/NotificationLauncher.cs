@@ -68,7 +68,7 @@ namespace ToastNotifications
                 }
             }
 
-            var toastNotification = new Notification(textBoxTitle.Text, textBoxBody.Text, duration, animationMethod, animationDirection);
+            var toastNotification = new Notification(textBoxTitle.Text, duration, animationMethod, animationDirection);
             PlayNotificationSound(comboBoxSound.Text);
             toastNotification.Show();
         }

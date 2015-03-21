@@ -74,6 +74,7 @@ namespace SlackWindowsTray
             }
         }
 
+        private Dictionary<string, Notification> _notifications = new Dictionary<string, Notification>();
 
         public void OnMessage(dynamic message)
         {
@@ -82,19 +83,28 @@ namespace SlackWindowsTray
                 var channelName = SlackIdToName(message.channel.Value);
                 var user = SlackIdToName(message.user.Value);
 
+                // Find object names in the message (e.g user references) and relace them
                 Regex messageIdRegex = new Regex("<@([A-Z0-9]+)>");
-                string text = message.text.Value;
-                text = messageIdRegex.Replace(text, match =>
+                string messageText = message.text.Value;
+                messageText = messageIdRegex.Replace(messageText, match =>
                 {
                     var id = match.Groups[1].Value;
                     return SlackIdToName(id);
                 });
 
-                Log.Write(string.Format("Parsed message: [{0}] {1}: {2}", channelName, user, text));
+                Log.Write(string.Format("Parsed message: [{0}] {1}: {2}", channelName, user, messageText));
 
-                var toastNotification = new Notification(channelName, string.Format("{0}: {1}", user, text),
-                    -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
-                MainWindow.Form.UIThread(delegate() { toastNotification.Show(); });
+                MainWindow.Form.UIThread(delegate()
+                {
+                    if (!_notifications.ContainsKey(channelName))
+                    {
+                        var newNotification = new Notification(channelName, -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
+                        newNotification.Show();
+                        _notifications.Add(channelName, newNotification);
+                    }
+                    Notification toastNotification = _notifications[channelName];
+                    toastNotification.AddMessage(string.Format("{0}: {1}", user, messageText));
+                });
             }
             catch (Exception e)
             {
