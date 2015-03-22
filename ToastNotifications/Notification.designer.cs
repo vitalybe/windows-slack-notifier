@@ -41,7 +41,9 @@ namespace ToastNotifications
             // 
             // labelBody
             // 
-            this.labelBody.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.labelBody.BackColor = System.Drawing.Color.Transparent;
             this.labelBody.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelBody.ForeColor = System.Drawing.Color.White;
@@ -49,17 +51,17 @@ namespace ToastNotifications
             this.labelBody.Name = "labelBody";
             this.labelBody.Size = new System.Drawing.Size(268, 90);
             this.labelBody.TabIndex = 0;
-            this.labelBody.Text = resources.GetString("labelBody.Text");
             this.labelBody.Click += new System.EventHandler(this.labelRO_Click);
             // 
             // labelTitle
             // 
-            this.labelTitle.BackColor = System.Drawing.Color.Gray;
+            this.labelTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(49)))), ((int)(((byte)(60)))));
             this.labelTitle.Font = new System.Drawing.Font("Calibri", 12.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTitle.ForeColor = System.Drawing.Color.Gainsboro;
-            this.labelTitle.Location = new System.Drawing.Point(3, 1);
+            this.labelTitle.ForeColor = System.Drawing.Color.White;
+            this.labelTitle.Location = new System.Drawing.Point(0, 1);
             this.labelTitle.Name = "labelTitle";
-            this.labelTitle.Size = new System.Drawing.Size(269, 21);
+            this.labelTitle.Size = new System.Drawing.Size(275, 21);
             this.labelTitle.TabIndex = 0;
             this.labelTitle.Text = "title goes here";
             this.labelTitle.Click += new System.EventHandler(this.labelTitle_Click);
@@ -68,7 +70,7 @@ namespace ToastNotifications
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(175)))), ((int)(((byte)(175)))), ((int)(((byte)(175)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(57)))), ((int)(((byte)(75)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(275, 121);
             this.ControlBox = false;

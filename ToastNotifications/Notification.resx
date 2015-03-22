@@ -120,9 +120,6 @@
   <metadata name="lifeTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="labelBody.Text" xml:space="preserve">
-    <value>I called the app "Cat Carrier", and the logo was a picture of a cat with a zipper photoshopped onto it. I called the app "Cat Carrier", and the logo was a picture of a cat with a zipper photoshopped onto it.</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
