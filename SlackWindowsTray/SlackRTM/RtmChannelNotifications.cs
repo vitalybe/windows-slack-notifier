@@ -6,34 +6,40 @@ namespace SlackWindowsTray.SlackRTM
 {
     class RtmChannelNotifications
     {
-        private Dictionary<string, Notification> _notifications = new Dictionary<string, Notification>();
+        private Dictionary<string, Notification> _channels = new Dictionary<string, Notification>();
 
-        public void ShowNotification(string channel, string user, string message)
+        public void ShowNotification(string channelId, string channelName, string user, string message)
         {
             if (MainWindow.Form.InvokeRequired)
             {
-                MainWindow.Form.Invoke((Action)(delegate { ShowNotification(channel, user, message); }));
+                MainWindow.Form.Invoke((Action)(delegate { ShowNotification(channelId, channelName, user, message); }));
                 return;
             }
 
-            if (!_notifications.ContainsKey(channel))
+            if (!_channels.ContainsKey(channelId))
             {
-                var newNotification = new Notification(channel, -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
-                newNotification.Closed += NotificationClosed;
+                var newNotification = new Notification(channelId, channelName, -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
+                newNotification.Closed += ChannelClosed;
+                newNotification.OnQuickReply += ChannelQuickReply;
 
                 newNotification.Show();
-                _notifications.Add(channel, newNotification);
+                _channels.Add(channelId, newNotification);
             }
 
-            Notification toastNotification = _notifications[channel];
+            Notification toastNotification = _channels[channelId];
             toastNotification.AddMessage(string.Format("{0}: {1}", user, message));
-
         }
 
-        private void NotificationClosed(object sender, EventArgs eventArgs)
+        private void ChannelQuickReply(object sender, string reply)
+        {
+            var notification = (Notification)sender;
+            SlackApi.Instance.PostMessage(notification.ChannelId, reply);
+        }
+
+        private void ChannelClosed(object sender, EventArgs eventArgs)
         {
             var notification = (Notification) sender;
-            _notifications.Remove(notification.Channel);
+            _channels.Remove(notification.ChannelId);
         }
 
 

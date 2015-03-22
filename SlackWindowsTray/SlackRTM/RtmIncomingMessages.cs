@@ -9,7 +9,7 @@ using ToastNotifications;
 namespace SlackWindowsTray
 {
     // Parses recieved messages
-    class RtmMessageService
+    class RtmIncomingMessages
     {
         // Channels, groups, users - ID and name
         private Dictionary<string, string> _slackObjects = new Dictionary<string, string>();
@@ -58,7 +58,7 @@ namespace SlackWindowsTray
 
         private void RefreshData(string api, string collectionName, string prefix = "")
         {
-            var dataCollection = Utils.Instance.SlackApiCall(api)[collectionName];
+            var dataCollection = SlackApi.Instance.Get(api)[collectionName];
             foreach (dynamic data in dataCollection)
             {
                 _slackObjects.Add(data.id.Value, prefix + data.name.Value);
@@ -67,7 +67,7 @@ namespace SlackWindowsTray
 
         private void RefreshImData()
         {
-            var dataCollection = Utils.Instance.SlackApiCall("im.list")["ims"];
+            var dataCollection = SlackApi.Instance.Get("im.list")["ims"];
             foreach (dynamic data in dataCollection)
             {
                 _slackObjects.Add(data.id.Value, SlackIdToName(data.user.Value));
@@ -79,7 +79,8 @@ namespace SlackWindowsTray
         {
             try
             {
-                var channelName = SlackIdToName(message.channel.Value);
+                string channelId = message.channel.Value;
+                var channelName = SlackIdToName(channelId);
                 var user = SlackIdToName(message.user.Value);
 
                 // Find object names in the message (e.g user references) and relace them
@@ -93,7 +94,7 @@ namespace SlackWindowsTray
 
                 Log.Write(string.Format("Parsed message: [{0}] {1}: {2}", channelName, user, messageText));
 
-                RtmChannelNotifications.Instance.ShowNotification(channelName, user, messageText);
+                RtmChannelNotifications.Instance.ShowNotification(channelId, channelName, user, messageText);
             }
             catch (Exception e)
             {
@@ -101,8 +102,8 @@ namespace SlackWindowsTray
             }
         }
 
-        public static readonly RtmMessageService Instance = new RtmMessageService();
-        private RtmMessageService()
+        public static readonly RtmIncomingMessages Instance = new RtmIncomingMessages();
+        private RtmIncomingMessages()
         {
         }
 

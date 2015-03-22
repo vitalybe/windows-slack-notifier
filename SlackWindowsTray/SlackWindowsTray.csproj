@@ -89,7 +89,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SlackRTM\RtmMessageService.cs" />
+    <Compile Include="SlackRTM\RtmIncomingMessages.cs" />
     <Compile Include="SlackRTM\RtmChannelNotifications.cs" />
     <Compile Include="SlackState\Model\ChatState.cs" />
     <Compile Include="SlackRTM\RtmConnection.cs" />
@@ -109,7 +109,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SlackWindowsTray.settings</DependentUpon>
     </Compile>
-    <Compile Include="Utils.cs" />
+    <Compile Include="SlackApi.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>

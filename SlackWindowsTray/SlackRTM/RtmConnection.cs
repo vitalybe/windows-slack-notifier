@@ -29,7 +29,7 @@ namespace SlackWindowsTray
 
         private void ConnectRtm()
         {
-            var rtmInfo = Utils.Instance.SlackApiCall("rtm.start");
+            var rtmInfo = SlackApi.Instance.Get("rtm.start");
             InitialConnect(rtmInfo.url.Value);
         }
 
@@ -60,7 +60,7 @@ namespace SlackWindowsTray
             {
                 Log.Write("Recieved message: " + e.Data);
 
-                RtmMessageService.Instance.OnMessage(message);
+                RtmIncomingMessages.Instance.OnMessage(message);
             }
         }
     }

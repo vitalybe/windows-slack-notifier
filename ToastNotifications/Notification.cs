@@ -15,17 +15,20 @@ namespace ToastNotifications
         private readonly FormAnimator _animator;
         private IntPtr _currentForegroundWindow;
         private List<string> messages = new List<string>();
-        private string _channel;
+        private string _channelId;
+
+        public event EventHandler<string> OnQuickReply = delegate { };
+
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="channel"></param>
+        /// <param name="channelId"></param>
         /// <param name="body"></param>
         /// <param name="duration"></param>
         /// <param name="animation"></param>
         /// <param name="direction"></param>
-        public Notification(string channel, int duration, FormAnimator.AnimationMethod animation, FormAnimator.AnimationDirection direction)
+        public Notification(string channelId, string channelName, int duration, FormAnimator.AnimationMethod animation, FormAnimator.AnimationDirection direction)
         {
             InitializeComponent();
 
@@ -35,17 +38,17 @@ namespace ToastNotifications
                 duration = duration * 1000;
 
             lifeTimer.Interval = duration;
-            _channel = channel;
-            labelTitle.Text = channel;
+            _channelId = channelId;
+            labelTitle.Text = channelName;
 
             _animator = new FormAnimator(this, animation, direction, 500);
 
             Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, Width - 5, Height - 5, 20, 20));
         }
 
-        public string Channel
+        public string ChannelId
         {
-            get { return _channel; }
+            get { return _channelId; }
         }
 
         #region Methods
@@ -195,5 +198,14 @@ namespace ToastNotifications
         }
 
         #endregion // Event Handlers
+
+        private void txtQuickReply_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && !string.IsNullOrWhiteSpace(txtQuickReply.Text))
+            {
+                OnQuickReply(this, txtQuickReply.Text);
+                txtQuickReply.Text = "";
+            }
+        }
     }
 }
