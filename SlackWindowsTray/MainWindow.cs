@@ -31,7 +31,7 @@ namespace SlackWindowsTray
             _stateService.OnSnoozeFinished += StateServiceOnOnSnoozeFinished;
 
             _stateService.Start();
-            SlackRtm.Instance.Start();
+            RtmConnection.Instance.Start();
 
             ChangeSlackState(new SlackState(TrayStates.DisconnectedFromExtension));
         }

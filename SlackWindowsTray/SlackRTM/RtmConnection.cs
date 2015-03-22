@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using EasyHttp.Http;
@@ -12,12 +13,12 @@ using WebSocketSharp;
 namespace SlackWindowsTray
 {
     // Responsible for connecting to Slack RTM, maintaining the connection and creating events for appropriate listeners
-    class SlackRtm
+    class RtmConnection
     {
         private WebSocket _webSocket = null;
 
-        public static readonly SlackRtm Instance = new SlackRtm();
-        private SlackRtm()
+        public static readonly RtmConnection Instance = new RtmConnection();
+        private RtmConnection()
         {
         }
 
@@ -29,15 +30,27 @@ namespace SlackWindowsTray
         private void ConnectRtm()
         {
             var rtmInfo = Utils.Instance.SlackApiCall("rtm.start");
-            ConnectWebSocket(rtmInfo.url.Value);
+            InitialConnect(rtmInfo.url.Value);
         }
 
-        private void ConnectWebSocket(string url)
+        private void InitialConnect(string url)
         {
             _webSocket = new WebSocket(url);
             _webSocket.OnMessage += OnSocketMessage;
-            _webSocket.OnClose += (sender, e) => Console.WriteLine("Connection closed: " + e.Reason);
-            _webSocket.Connect ();
+            _webSocket.OnClose += OnSocketClose;
+            _webSocket.Connect();
+        }
+
+        void OnSocketClose(object sender, CloseEventArgs e)
+        {
+            if (_webSocket == null)
+            {
+                throw new ApplicationException("_webSocket can't be null");
+            }
+
+            Log.Write("WARN: RTM websocket closed. Reconnecting in a few seconds...");
+            Thread.Sleep(5000);
+            _webSocket.Connect();
         }
 
         private void OnSocketMessage(object sender, MessageEventArgs e)
