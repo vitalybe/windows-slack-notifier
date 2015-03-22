@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using EasyHttp.Http;
 using Newtonsoft.Json;
+using SlackWindowsTray.SlackRTM;
 using ToastNotifications;
 
 namespace SlackWindowsTray
@@ -12,6 +13,7 @@ namespace SlackWindowsTray
     {
         // Channels, groups, users - ID and name
         private Dictionary<string, string> _slackObjects = new Dictionary<string, string>();
+        private bool _isRefreshing = false;
 
         private string SlackIdToName(string id)
         {
@@ -29,17 +31,15 @@ namespace SlackWindowsTray
             return name;
         }
 
-        private bool isRefreshing = false;
-
         private void RefreshAll()
         {
-            if (isRefreshing)
+            if (_isRefreshing)
             {
                 // Prevent recursion
                 return;
             }
 
-            isRefreshing = true;
+            _isRefreshing = true;
             try
             {
                 _slackObjects.Clear();
@@ -52,7 +52,7 @@ namespace SlackWindowsTray
             }
             finally
             {
-                isRefreshing = false;
+                _isRefreshing = false;
             }
         }
 
@@ -74,7 +74,6 @@ namespace SlackWindowsTray
             }
         }
 
-        private Dictionary<string, Notification> _notifications = new Dictionary<string, Notification>();
 
         public void OnMessage(dynamic message)
         {
@@ -94,17 +93,7 @@ namespace SlackWindowsTray
 
                 Log.Write(string.Format("Parsed message: [{0}] {1}: {2}", channelName, user, messageText));
 
-                MainWindow.Form.UIThread(delegate()
-                {
-                    if (!_notifications.ContainsKey(channelName))
-                    {
-                        var newNotification = new Notification(channelName, -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
-                        newNotification.Show();
-                        _notifications.Add(channelName, newNotification);
-                    }
-                    Notification toastNotification = _notifications[channelName];
-                    toastNotification.AddMessage(string.Format("{0}: {1}", user, messageText));
-                });
+                RtmChannelNotifications.Instance.ShowNotification(channelName, user, messageText);
             }
             catch (Exception e)
             {

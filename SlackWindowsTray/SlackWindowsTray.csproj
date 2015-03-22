@@ -90,6 +90,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SlackRTM\RtmMessageService.cs" />
+    <Compile Include="SlackRTM\RtmChannelNotifications.cs" />
     <Compile Include="SlackState\Model\ChatState.cs" />
     <Compile Include="SlackRTM\RtmConnection.cs" />
     <Compile Include="SlackState\SlackEndpoint.cs" />

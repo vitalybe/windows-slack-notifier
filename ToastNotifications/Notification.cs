@@ -15,16 +15,17 @@ namespace ToastNotifications
         private readonly FormAnimator _animator;
         private IntPtr _currentForegroundWindow;
         private List<string> messages = new List<string>();
+        private string _channel;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="title"></param>
+        /// <param name="channel"></param>
         /// <param name="body"></param>
         /// <param name="duration"></param>
         /// <param name="animation"></param>
         /// <param name="direction"></param>
-        public Notification(string title, int duration, FormAnimator.AnimationMethod animation, FormAnimator.AnimationDirection direction)
+        public Notification(string channel, int duration, FormAnimator.AnimationMethod animation, FormAnimator.AnimationDirection direction)
         {
             InitializeComponent();
 
@@ -34,11 +35,17 @@ namespace ToastNotifications
                 duration = duration * 1000;
 
             lifeTimer.Interval = duration;
-            labelTitle.Text = title;
+            _channel = channel;
+            labelTitle.Text = channel;
 
             _animator = new FormAnimator(this, animation, direction, 500);
 
             Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, Width - 5, Height - 5, 20, 20));
+        }
+
+        public string Channel
+        {
+            get { return _channel; }
         }
 
         #region Methods
