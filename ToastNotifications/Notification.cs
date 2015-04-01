@@ -54,6 +54,12 @@ namespace ToastNotifications
                             "   .outgoing {color: white; }" +
                             "</style>" +
                             "</head>";
+
+            MouseMove += AllControls_MouseMove;
+            foreach (Control control in this.Controls)
+            {
+                control.MouseMove += AllControls_MouseMove;
+            }
         }
 
         public string ChannelId
@@ -185,6 +191,12 @@ namespace ToastNotifications
                 OnQuickReply(this, txtQuickReply.Text);
                 txtQuickReply.Text = "";
             }
+        }
+
+        private void AllControls_MouseMove(object sender, EventArgs e)
+        {
+            lifeTimer.Stop();
+            lifeTimer.Start();
         }
     }
 }
