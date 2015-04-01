@@ -14,6 +14,7 @@ namespace SlackWindowsTray
         // Channels, groups, users - ID and name
         private Dictionary<string, string> _slackObjects = new Dictionary<string, string>();
         private bool _isRefreshing = false;
+        private string myUsername = null;
 
         private string SlackIdToName(string id)
         {
@@ -79,9 +80,15 @@ namespace SlackWindowsTray
         {
             try
             {
+                if (message.subtype != null && (message.subtype.value == "bot_message" || message.subtype.value == "file_comment"))
+                {
+                    return;                   
+                }
+
                 string channelId = message.channel.Value;
                 var channelName = SlackIdToName(channelId);
                 var user = SlackIdToName(message.user.Value);
+                bool isIncoming = myUsername != user;
 
                 // Find object names in the message (e.g user references) and relace them
                 Regex messageIdRegex = new Regex("<@([A-Z0-9]+)>");
@@ -94,7 +101,7 @@ namespace SlackWindowsTray
 
                 Log.Write(string.Format("Parsed message: [{0}] {1}: {2}", channelName, user, messageText));
 
-                RtmChannelNotifications.Instance.ShowNotification(channelId, channelName, user, messageText);
+                RtmChannelNotifications.Instance.ShowNotification(channelId, channelName, user, messageText, isIncoming);
             }
             catch (Exception e)
             {
@@ -105,6 +112,9 @@ namespace SlackWindowsTray
         public static readonly RtmIncomingMessages Instance = new RtmIncomingMessages();
         private RtmIncomingMessages()
         {
+            var myInfo = SlackApi.Instance.Get("auth.test");
+            myUsername = myInfo.user;
+
         }
 
     }

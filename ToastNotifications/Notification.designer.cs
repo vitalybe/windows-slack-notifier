@@ -31,28 +31,14 @@ namespace ToastNotifications
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Notification));
             this.lifeTimer = new System.Windows.Forms.Timer(this.components);
-            this.labelBody = new System.Windows.Forms.Label();
             this.labelTitle = new System.Windows.Forms.Label();
             this.txtQuickReply = new System.Windows.Forms.TextBox();
+            this.htmlBody = new TheArtOfDev.HtmlRenderer.WinForms.HtmlPanel();
             this.SuspendLayout();
             // 
             // lifeTimer
             // 
             this.lifeTimer.Tick += new System.EventHandler(this.lifeTimer_Tick);
-            // 
-            // labelBody
-            // 
-            this.labelBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelBody.BackColor = System.Drawing.Color.Transparent;
-            this.labelBody.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelBody.ForeColor = System.Drawing.Color.White;
-            this.labelBody.Location = new System.Drawing.Point(9, 28);
-            this.labelBody.Name = "labelBody";
-            this.labelBody.Size = new System.Drawing.Size(277, 92);
-            this.labelBody.TabIndex = 0;
-            this.labelBody.Click += new System.EventHandler(this.labelRO_Click);
             // 
             // labelTitle
             // 
@@ -72,11 +58,24 @@ namespace ToastNotifications
             // 
             this.txtQuickReply.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtQuickReply.Location = new System.Drawing.Point(8, 132);
+            this.txtQuickReply.Location = new System.Drawing.Point(8, 128);
             this.txtQuickReply.Name = "txtQuickReply";
             this.txtQuickReply.Size = new System.Drawing.Size(278, 20);
             this.txtQuickReply.TabIndex = 1;
             this.txtQuickReply.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtQuickReply_KeyDown);
+            // 
+            // htmlBody
+            // 
+            this.htmlBody.AutoScroll = true;
+            this.htmlBody.AutoScrollMinSize = new System.Drawing.Size(278, 20);
+            this.htmlBody.BackColor = System.Drawing.Color.Transparent;
+            this.htmlBody.BaseStylesheet = null;
+            this.htmlBody.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.htmlBody.Location = new System.Drawing.Point(8, 26);
+            this.htmlBody.Name = "htmlBody";
+            this.htmlBody.Size = new System.Drawing.Size(278, 96);
+            this.htmlBody.TabIndex = 2;
+            this.htmlBody.Text = "<p style=\"margin: 0; color: yellow; font-weight: bold\">hi</p>";
             // 
             // Notification
             // 
@@ -86,9 +85,9 @@ namespace ToastNotifications
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(294, 159);
             this.ControlBox = false;
+            this.Controls.Add(this.htmlBody);
             this.Controls.Add(this.txtQuickReply);
             this.Controls.Add(this.labelTitle);
-            this.Controls.Add(this.labelBody);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -110,8 +109,8 @@ namespace ToastNotifications
         #endregion
 
         private System.Windows.Forms.Timer lifeTimer;
-        private System.Windows.Forms.Label labelBody;
         private System.Windows.Forms.Label labelTitle;
         private System.Windows.Forms.TextBox txtQuickReply;
+        private TheArtOfDev.HtmlRenderer.WinForms.HtmlPanel htmlBody;
     }
 }

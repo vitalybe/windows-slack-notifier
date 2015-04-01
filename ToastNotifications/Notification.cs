@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Web;
 using System.Windows.Forms;
 
 namespace ToastNotifications
@@ -25,25 +26,34 @@ namespace ToastNotifications
         /// </summary>
         /// <param name="channelId"></param>
         /// <param name="body"></param>
-        /// <param name="duration"></param>
+        /// <param name="durationSeconds"></param>
         /// <param name="animation"></param>
         /// <param name="direction"></param>
-        public Notification(string channelId, string channelName, int duration, FormAnimator.AnimationMethod animation, FormAnimator.AnimationDirection direction)
+        public Notification(string channelId, string channelName, int durationSeconds, FormAnimator.AnimationMethod animation, FormAnimator.AnimationDirection direction)
         {
             InitializeComponent();
 
-            if (duration < 0)
-                duration = int.MaxValue;
+            if (durationSeconds < 0)
+                durationSeconds = int.MaxValue;
             else
-                duration = duration * 1000;
+                durationSeconds = durationSeconds * 1000;
 
-            lifeTimer.Interval = duration;
+            lifeTimer.Interval = durationSeconds;
             _channelId = channelId;
             labelTitle.Text = channelName;
 
             _animator = new FormAnimator(this, animation, direction, 500);
 
             Region = Region.FromHrgn(NativeMethods.CreateRoundRectRgn(0, 0, Width - 5, Height - 5, 20, 20));
+
+            htmlBody.Text = "<head>" +
+                            "<style>" +
+                            "   p {margin: 0}" +
+                            "   .username {font-weight: bold; }" +
+                            "   .incoming {color: yellow; }" +
+                            "   .outgoing {color: white; }" +
+                            "</style>" +
+                            "</head>";
         }
 
         public string ChannelId
@@ -67,52 +77,21 @@ namespace ToastNotifications
             base.Show();
         }
 
-        private string LimitLines(string text, int linesCount)
+        private int _messageCounter = 0;
+        public void AddMessage(string username, string message, bool isIncoming)
         {
-            var graphics = CreateGraphics();
-            var controlSize = new SizeF(labelBody.Width, labelBody.Height);
-
-            var lineHeight = graphics.MeasureString(".", labelBody.Font, controlSize).Height;
-            while (graphics.MeasureString(text, labelBody.Font, controlSize).Height > (lineHeight * linesCount))
-            {
-                text = text.Substring(0, text.Length - 1);
-                text = text.Substring(0, text.Length - 3);
-                text += "...";
-            }
-
-            return text;
-        }
-
-        private double CountLines(string text)
-        {
-            var graphics = CreateGraphics();
-            var controlSize = new SizeF(labelBody.Width, labelBody.Height);
-
-            var lineHeight = graphics.MeasureString(".", labelBody.Font, controlSize).Height;
-            return Math.Round(graphics.MeasureString(text, labelBody.Font, controlSize).Height/lineHeight);
-        }
-
-        public void AddMessage(string message)
-        {
-            // All the existing chat messages are limited to 1 message
-            for (int i = 0; i < messages.Count; i++)
-            {
-                messages[i] = LimitLines(messages[i], 1);
-            }
-
-            // Limit it total line count to show a bit more (because it is a new message)
-            message = LimitLines(message, 3);
-
-            // If the amount of messages is full, remove the oldest one
-            while (CountLines(message) + messages.Count > 5)
-            {
-                messages.RemoveAt(0);
-            }
-
+            string messageId = "message" + _messageCounter;
+            _messageCounter++;
+            
             // Add the newest message
             messages.Add(message);
-            
-            labelBody.Text = string.Join(Environment.NewLine, messages);
+            string direction = isIncoming ? "incoming" : "outgoing";
+            htmlBody.Text += string.Format("<p id=\"{0}\" class=\"{1}\"><span class=\"username\">{2}</span>: {3}</p>", 
+                                            messageId, direction, username, HttpUtility.HtmlEncode(message));
+            htmlBody.ScrollToElement(messageId);
+
+            lifeTimer.Stop();
+            lifeTimer.Start();
         }
 
         #endregion // Methods

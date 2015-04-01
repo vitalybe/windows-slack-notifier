@@ -8,17 +8,17 @@ namespace SlackWindowsTray.SlackRTM
     {
         private Dictionary<string, Notification> _channels = new Dictionary<string, Notification>();
 
-        public void ShowNotification(string channelId, string channelName, string user, string message)
+        public void ShowNotification(string channelId, string channelName, string user, string message, bool isIncoming)
         {
             if (MainWindow.Form.InvokeRequired)
             {
-                MainWindow.Form.Invoke((Action)(delegate { ShowNotification(channelId, channelName, user, message); }));
+                MainWindow.Form.Invoke((Action)(delegate { ShowNotification(channelId, channelName, user, message, isIncoming); }));
                 return;
             }
 
             if (!_channels.ContainsKey(channelId))
             {
-                var newNotification = new Notification(channelId, channelName, -1, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
+                var newNotification = new Notification(channelId, channelName, 20, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
                 newNotification.Closed += ChannelClosed;
                 newNotification.OnQuickReply += ChannelQuickReply;
 
@@ -27,7 +27,7 @@ namespace SlackWindowsTray.SlackRTM
             }
 
             Notification toastNotification = _channels[channelId];
-            toastNotification.AddMessage(string.Format("{0}: {1}", user, message));
+            toastNotification.AddMessage(user, message, isIncoming);
         }
 
         private void ChannelQuickReply(object sender, string reply)
