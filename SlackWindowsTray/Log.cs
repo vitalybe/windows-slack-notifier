@@ -11,7 +11,13 @@ namespace SlackWindowsTray
 
         static Log()
         {
-            var directoryName = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            var directoryName = Environment.ExpandEnvironmentVariables("%TEMP%");
+            directoryName = Path.Combine(directoryName, "SlackWindowsTray");
+            if (!Directory.Exists(directoryName))
+            {
+                Directory.CreateDirectory(directoryName);
+            }
+
             var logFileName = Path.Combine(directoryName, "SlackWindowsTray.log");
             LogFile = new StreamWriter(new FileStream(logFileName, FileMode.OpenOrCreate));
         }
