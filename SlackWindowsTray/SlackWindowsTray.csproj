@@ -71,10 +71,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChromeActivator.cs" />
-    <Compile Include="ControlExtensions.cs" />
-    <Compile Include="HwndWindow.cs" />
-    <Compile Include="Log.cs" />
+    <Compile Include="Utils\ChromeActivator.cs" />
+    <Compile Include="Utils\ControlExtensions.cs" />
+    <Compile Include="Utils\HwndWindow.cs" />
+    <Compile Include="Utils\Log.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,25 +91,25 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SlackRTM\RtmIncomingMessages.cs" />
     <Compile Include="SlackRTM\RtmChannelNotifications.cs" />
-    <Compile Include="SlackState\Model\ChatState.cs" />
-    <Compile Include="SlackRTM\RtmConnection.cs" />
-    <Compile Include="SlackState\SlackEndpoint.cs" />
-    <Compile Include="SlackState\Model\SlackState.cs" />
-    <Compile Include="SlackState\Model\TrayStates.cs" />
-    <Compile Include="SlackState\StateProcessors\SnoozingProcessor.cs" />
-    <Compile Include="SlackState\StateProcessors\StateProcessorBase.cs" />
-    <Compile Include="SlackState\StateProcessors\StartProcessor.cs" />
-    <Compile Include="SlackState\StateProcessors\StateCallbackProcessor.cs" />
-    <Compile Include="SlackState\StateProcessors\StateAnimationProcessor.cs" />
-    <Compile Include="SlackState\StateProcessors\StateProcessorPriorityEnum.cs" />
-    <Compile Include="SlackState\StateProcessors\StateProcessorsChain.cs" />
-    <Compile Include="SlackState\StateService.cs" />
+    <Compile Include="StateProcessors\Model\ChatState.cs" />
+    <Compile Include="Connections\RtmConnection.cs" />
+    <Compile Include="Connections\ChromeConnection.cs" />
+    <Compile Include="StateProcessors\Model\SlackState.cs" />
+    <Compile Include="StateProcessors\Model\TrayStates.cs" />
+    <Compile Include="StateProcessors\SnoozingProcessor.cs" />
+    <Compile Include="StateProcessors\StateProcessorBase.cs" />
+    <Compile Include="StateProcessors\StartProcessor.cs" />
+    <Compile Include="StateProcessors\StateCallbackProcessor.cs" />
+    <Compile Include="StateProcessors\StateAnimationProcessor.cs" />
+    <Compile Include="StateProcessors\StateProcessorPriorityEnum.cs" />
+    <Compile Include="StateProcessors\StateProcessorsChain.cs" />
+    <Compile Include="StateProcessors\StateService.cs" />
     <Compile Include="SlackWindowsTray.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SlackWindowsTray.settings</DependentUpon>
     </Compile>
-    <Compile Include="SlackApi.cs" />
+    <Compile Include="Connections\SlackApi.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>

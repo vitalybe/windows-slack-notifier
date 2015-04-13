@@ -18,6 +18,8 @@ namespace SlackWindowsTray
         private WebSocket _webSocket = null;
 
         public static readonly RtmConnection Instance = new RtmConnection();
+        private readonly RtmIncomingMessages _rtmIncomingMessages = RtmIncomingMessages.Instance;
+
         private RtmConnection()
         {
         }
@@ -59,8 +61,7 @@ namespace SlackWindowsTray
             if (message.type == "message")
             {
                 Log.Write("Recieved message: " + e.Data);
-
-                RtmIncomingMessages.Instance.OnMessage(message);
+                _rtmIncomingMessages.OnMessage(message);
             }
         }
     }

@@ -29,8 +29,8 @@ namespace SlackWindowsTray
 
         private void ConnectionToExtension()
         {
-            _wssv.AddWebSocketService<SlackEndpoint>("/Slack");
-            SlackEndpoint.OnSlackStateChanged += (o, state) => UpdateState(state);
+            _wssv.AddWebSocketService<ChromeConnection>("/Slack");
+            ChromeConnection.OnSlackStateChanged += (o, state) => UpdateState(state);
 
             _wssv.Start();
             if (_wssv.IsListening)

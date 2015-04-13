@@ -8,7 +8,7 @@ using WebSocketSharp.Server;
 
 namespace SlackWindowsTray
 {
-    public class SlackEndpoint : WebSocketBehavior
+    public class ChromeConnection : WebSocketBehavior
     {
         public static event EventHandler<SlackState> OnSlackStateChanged = delegate { };
 
