@@ -10,8 +10,16 @@ namespace SlackWindowsTray
 {
     public class ChromeConnection : WebSocketBehavior
     {
-        public static event EventHandler<SlackState> OnSlackStateChanged = delegate { };
 
+        public static readonly ChromeConnection Instance = new ChromeConnection();
+        private ChromeConnection()
+        {
+
+        }
+
+
+        private WebSocketServer _wssv = new WebSocketServer(4649);
+        
         protected override void OnOpen()
         {
             OnSlackStateChanged(this, new SlackState(TrayStates.AllRead));
@@ -40,5 +48,23 @@ namespace SlackWindowsTray
         {
             OnSlackStateChanged(this, new SlackState(TrayStates.DisconnectedFromExtension));
         }
+
+        public void Start()
+        {
+            _wssv.AddWebSocketService("/Slack", () => this);
+            _wssv.Start();
+
+            if (_wssv.IsListening)
+            {
+                global::SlackWindowsTray.Log.Write(string.Format("Listening on port {0}, and providing WebSocket services:", _wssv.Port));
+                foreach (var path in _wssv.WebSocketServices.Paths)
+                {
+                    global::SlackWindowsTray.Log.Write(string.Format("- {0}", path));
+                }
+            }
+        }
+
+        public event EventHandler<SlackState> OnSlackStateChanged = delegate { };
+
     }
 }

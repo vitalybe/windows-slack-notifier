@@ -6,10 +6,10 @@ namespace SlackWindowsTray
 {
     class StateService
     {
-        private WebSocketServer _wssv = new WebSocketServer(4649);
         private SnoozingProcessor _snoozingProcessor;
         private StateProcessorsChain _processorsChain;
         private SlackState _lastSlackState;
+        private ChromeConnection _chromeConnection = ChromeConnection.Instance;
 
         private StateService()
         {
@@ -29,18 +29,8 @@ namespace SlackWindowsTray
 
         private void ConnectionToExtension()
         {
-            _wssv.AddWebSocketService<ChromeConnection>("/Slack");
-            ChromeConnection.OnSlackStateChanged += (o, state) => UpdateState(state);
-
-            _wssv.Start();
-            if (_wssv.IsListening)
-            {
-                Log.Write(string.Format("Listening on port {0}, and providing WebSocket services:", _wssv.Port));
-                foreach (var path in _wssv.WebSocketServices.Paths)
-                {
-                    Log.Write(string.Format("- {0}", path));
-                }
-            }
+            _chromeConnection.Start();
+            _chromeConnection.OnSlackStateChanged += (o, state) => UpdateState(state);
         }
 
         private void UpdateState(SlackState state)
