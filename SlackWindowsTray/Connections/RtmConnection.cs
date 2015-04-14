@@ -32,15 +32,25 @@ namespace SlackWindowsTray
         private void ConnectRtm()
         {
             var rtmInfo = SlackApi.Instance.Get("rtm.start");
-            InitialConnect(rtmInfo.url.Value);
+            Connect(rtmInfo.url.Value);
         }
 
-        private void InitialConnect(string url)
+        private void Connect(string url)
         {
+            if (_webSocket != null)
+            {
+                _webSocket.Close();
+                _webSocket.OnMessage -= OnSocketMessage;
+                _webSocket.OnClose -= OnSocketClose;
+                _webSocket = null;
+            }
+
             _webSocket = new WebSocket(url);
             _webSocket.OnMessage += OnSocketMessage;
             _webSocket.OnClose += OnSocketClose;
             _webSocket.Connect();
+
+            _webSocket.Close();
         }
 
         void OnSocketClose(object sender, CloseEventArgs e)
@@ -52,7 +62,7 @@ namespace SlackWindowsTray
 
             Log.Write("WARN: RTM websocket closed. Reconnecting in a few seconds...");
             Thread.Sleep(5000);
-            _webSocket.Connect();
+            ConnectRtm();
         }
 
         private void OnSocketMessage(object sender, MessageEventArgs e)
