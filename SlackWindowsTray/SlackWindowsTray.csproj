@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SnoozingService.cs" />
     <Compile Include="Utils\ChromeActivator.cs" />
     <Compile Include="Utils\ControlExtensions.cs" />
     <Compile Include="Utils\HwndWindow.cs" />
@@ -98,10 +99,8 @@
     <Compile Include="StateProcessors\Model\TrayStates.cs" />
     <Compile Include="StateProcessors\SnoozingProcessor.cs" />
     <Compile Include="StateProcessors\StateProcessorBase.cs" />
-    <Compile Include="StateProcessors\StartProcessor.cs" />
     <Compile Include="StateProcessors\StateCallbackProcessor.cs" />
     <Compile Include="StateProcessors\StateAnimationProcessor.cs" />
-    <Compile Include="StateProcessors\StateProcessorPriorityEnum.cs" />
     <Compile Include="StateProcessors\StateProcessorsChain.cs" />
     <Compile Include="StateProcessors\StateService.cs" />
     <Compile Include="SlackWindowsTray.Designer.cs">

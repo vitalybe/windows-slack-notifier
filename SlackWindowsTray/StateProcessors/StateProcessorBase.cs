@@ -6,8 +6,6 @@ namespace SlackWindowsTray
     {
         protected abstract bool HandleStateRaw(SlackState slackState);
 
-        public abstract StateProcessorPriorityEnum Priority { get; }
-
         public StateProcessorBase Next { get; set; }
 
         public void HandleState(SlackState slackState)

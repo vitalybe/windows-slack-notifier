@@ -1,63 +1,30 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace SlackWindowsTray
 {
     class StateProcessorsChain
     {
-        private StateProcessorBase _root = new StartProcessor();
+        private List<StateProcessorBase> _processors = new List<StateProcessorBase>();
+        private StateProcessorBase _root = null;
 
-        private void AddProcessor(StateProcessorBase currentProcessor, StateProcessorBase newProcessor)
-        {
-            if (currentProcessor.Next == null || currentProcessor.Next.Priority >= newProcessor.Priority)
-            {
-                newProcessor.Next = currentProcessor.Next;
-                currentProcessor.Next = newProcessor;
-            }
-            else
-            {
-                AddProcessor(currentProcessor.Next, newProcessor);
-            }
-        }
-
-        private void RemoveProcessor(StateProcessorBase currentProcessor, StateProcessorBase removedProcessor)
-        {
-            if (currentProcessor.Next == removedProcessor)
-            {
-                currentProcessor.Next = removedProcessor.Next;
-            }
-            else if (currentProcessor.Next != null)
-            {
-                RemoveProcessor(currentProcessor.Next, removedProcessor);
-            }
-        }
 
         public void AddProcessor(StateProcessorBase newProcessor)
         {
-            if (_root == null)
+            var last = _processors.LastOrDefault();
+            if (last != null)
             {
-                _root = newProcessor;
+                last.Next = newProcessor;
             }
-            else
-            {
-                AddProcessor(_root, newProcessor);
-            }
-        }
 
-        public void RemoveProcessor(StateProcessorBase removedProcessor)
-        {
-            if (_root == removedProcessor)
-            {
-                _root = null;
-            }
-            else
-            {
-                RemoveProcessor(_root, removedProcessor);
-            }
+            _processors.Add(newProcessor);
         }
 
         public void HandleState(SlackState state)
         {
-            if (_root != null)
+            if (_processors.Count > 0)
             {
-                _root.HandleState(state);
+                _processors.First().HandleState(state);
             }
         }
     }

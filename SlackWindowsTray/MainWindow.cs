@@ -18,6 +18,9 @@ namespace SlackWindowsTray
         public static Form Form { get { return _form; } }
 
         private StateService _stateService = StateService.Instance;
+        private SnoozingService _snoozingService = SnoozingService.Instance;
+        private ChromeConnection _chromeConnection = ChromeConnection.Instance;
+        private RtmConnection _rtmConnection = RtmConnection.Instance;
         private SlackState _lastSlackState;
 
         public MainWindow()
@@ -28,10 +31,11 @@ namespace SlackWindowsTray
             slackTrayIcon.ContextMenuStrip = trayContextMenu;
 
             _stateService.OnStateChange += (o, state) => this.UIThread(delegate { ChangeSlackState(state); });
-            _stateService.OnSnoozeFinished += StateServiceOnOnSnoozeFinished;
+            _snoozingService.OnChannelSnooze += SnoozingServiceOnOnChannelSnooze;
+            _snoozingService.OnChannelSnoozeFinished += OnChannelSnoozeFinished;
 
-            _stateService.Start();
-            RtmConnection.Instance.Start();
+            _rtmConnection.Start();
+            _chromeConnection.Start();
 
             ChangeSlackState(new SlackState(TrayStates.DisconnectedFromExtension));
         }
@@ -88,27 +92,33 @@ namespace SlackWindowsTray
 
         private async void snoozeStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShowHideSnoozeMenuItems(snoozeVisible: false);
-            _stateService.Snooze();
+            _snoozingService.Snooze(null);
         }
 
         private void unsnoozeStripMenuItem_Click(object sender, EventArgs e)
         {
-            _stateService.Unsnooze();
+            _snoozingService.UnsnoozeAll();
         }
 
-        
-        private void StateServiceOnOnSnoozeFinished(object sender, EventArgs eventArgs)
+        private void OnChannelSnoozeFinished(object sender, string e)
         {
-            ShowHideSnoozeMenuItems(snoozeVisible: true);
+            if (!_snoozingService.IsAnySnoozeActive)
+            {
+                ShowHideSnoozeMenuItems(snoozeVisible: true);
+            }
         }
 
-        private EventHandler getChatSnoozeItemClickEvent(ChatState chatState)
+        private void SnoozingServiceOnOnChannelSnooze(object sender, string s)
+        {
+            ShowHideSnoozeMenuItems(snoozeVisible: false);
+        }
+
+
+        private EventHandler ChatSnoozeItemClickEvent(ChatState chatState)
         {
             return delegate
             {
-                ShowHideSnoozeMenuItems(snoozeVisible: false);
-                _stateService.Snooze(chatState.name);
+                _snoozingService.Snooze(chatState.name);
             };
         }
 
@@ -117,7 +127,9 @@ namespace SlackWindowsTray
         {
             const string CHAT_SNOOZE_SEPERATOR = "ChatSnoozeSeperator";
 
-            // Delete old snooze menu items
+            // Everytime we open the context menu, we recreate the list of channels that can be snoozed
+            // To do that, every time we open the context menu, we first clear ALL the items that represent a
+            // snoozeable channel
             var chatSnoozeMenuItems = (from contextItem in trayContextMenu.Items.Cast<ToolStripItem>()
                                        where (string)contextItem.Tag == CHAT_SNOOZE_SEPERATOR
                                        select contextItem).ToList();
@@ -127,14 +139,14 @@ namespace SlackWindowsTray
                 trayContextMenu.Items.Remove(chatSnoozeMenuItem);
             }
 
-            // Create new snooze menu items
+            // Next we create items for channels that currently have notification and thus, can be snoozed.
             if (_lastSlackState != null)
             {
                 var newMenuItems = (from chatState in _lastSlackState.ChatStates
                                     where chatState.unread
                                     orderby chatState.name
                                     let menuName = "Snooze " + chatState.name
-                                    let clickEvent = getChatSnoozeItemClickEvent(chatState)
+                                    let clickEvent = ChatSnoozeItemClickEvent(chatState)
                                     select new ToolStripMenuItem(menuName, null, clickEvent) { Tag = CHAT_SNOOZE_SEPERATOR }
                                    ).ToList();
 

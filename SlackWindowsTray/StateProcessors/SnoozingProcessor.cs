@@ -10,108 +10,74 @@ namespace SlackWindowsTray
     // Or unread notifications from specific channels (won't snooze mentions)
     class SnoozingProcessor : StateProcessorBase
     {
-        private readonly Action _snoozeFinishedCallback;
-        private SlackState _lastSlackState;
-        
-        private bool _allSnoozed = false;
-        private readonly Dictionary<string, ChatState> _snoozedChats = new Dictionary<string, ChatState>();
-        private CancellationTokenSource _snoozeCancellationToken = new CancellationTokenSource();
-
-        public SnoozingProcessor(Action snoozeFinishedCallback)
-        {
-            _snoozeFinishedCallback = snoozeFinishedCallback;
-        }
-
-        public override StateProcessorPriorityEnum Priority
-        {
-            get { return StateProcessorPriorityEnum.Snoozing; }
-        }
-
-        public async void Snooze(string chatName = null)
-        {
-            if (chatName != null)
-            {
-                SnoozeChat(_lastSlackState, chatName);
-
-                NextHandleState(_lastSlackState);
-
-                try
-                {
-                    var soozeTimeout = TimeSpan.FromMinutes(SlackWindowsTray.Default.SnoozeChatTimeMinutes);
-                    await Task.Delay(soozeTimeout, _snoozeCancellationToken.Token);
-                }
-                catch (TaskCanceledException e)
-                {
-                }
-
-                _lastSlackState.ReplaceChatState(_snoozedChats[chatName]);
-                _snoozedChats.Remove(chatName);
-
-                NextHandleState(_lastSlackState);
-
-                CallbackIfAllSnoozeFinished();
-            }
-            else
-            {
-                _allSnoozed = true;
-                NextHandleState(new SlackState(TrayStates.AllRead));
-
-                try
-                {
-                    var soozeTimeout = TimeSpan.FromMinutes(SlackWindowsTray.Default.SnoozeAllTimeMinutes);
-                    await Task.Delay(soozeTimeout, _snoozeCancellationToken.Token);
-                }
-                catch (TaskCanceledException e)
-                {
-                }
-                
-                _allSnoozed = false;
-                NextHandleState(_lastSlackState);
-
-                CallbackIfAllSnoozeFinished();
-            }
-        }
-
-        private void CallbackIfAllSnoozeFinished()
-        {
-            if (_allSnoozed == false && _snoozedChats.Count == 0)
-            {
-                _snoozeFinishedCallback();
-            }
-        }
+        private SnoozingService _snoozingService = SnoozingService.Instance;
+        private SlackState _lastSlackState = null;
+        private readonly Dictionary<string, ChatState> _snoozedChannelStates = new Dictionary<string, ChatState>();
 
         private void SnoozeChat(SlackState lastSlackState, string chatName)
         {
-            var snoozedChatState = new ChatState {name = chatName};
+            var snoozedChatState = new ChatState {name = chatName, unread = false, mention = false};
             var originalChatState = lastSlackState.ReplaceChatState(snoozedChatState);
-            _snoozedChats[chatName] = originalChatState;
+            _snoozedChannelStates[chatName] = originalChatState;
+        }
+
+        private void SnoozingServiceOnOnChannelSnooze(object sender, string channelName)
+        {
+            if (!string.IsNullOrEmpty(channelName))
+            {
+                SnoozeChat(_lastSlackState, channelName);
+                NextHandleState(_lastSlackState);
+            }
+            else
+            {
+                NextHandleState(new SlackState(TrayStates.AllRead));
+            }
+
+        }
+
+        private void SnoozingServiceOnOnChannelSnoozeFinished(object sender, string channelName)
+        {
+            if (!string.IsNullOrEmpty(channelName))
+            {
+                _lastSlackState.ReplaceChatState(_snoozedChannelStates[channelName]);
+                _snoozedChannelStates.Remove(channelName);
+                NextHandleState(_lastSlackState);
+            }
+            else
+            {
+                NextHandleState(_lastSlackState);
+            }
+
         }
 
         protected override bool HandleStateRaw(SlackState slackState)
         {
             _lastSlackState = slackState;
 
-            if (_allSnoozed)
+            if (_snoozingService.IsDndMode)
             {
                 // Don't proceed with the state change if everything is snoozed - We don't want to show anything to the user anyway
                 return false;
             }
             else
             {
-                List<string> chatNames = _snoozedChats.Keys.Select(chatName => chatName).ToList();
-                foreach (var chatName in chatNames)
+                List<string> channelNames = slackState.ChatStates.Select(chatState => chatState.name).ToList();
+                foreach (var channelName in channelNames)
                 {
-                    SnoozeChat(_lastSlackState, chatName);
+                    if (_snoozingService.IsChannelSnoozed(channelName))
+                    {
+                        SnoozeChat(slackState, channelName);
+                    }
                 }
 
                 return true;
             }
         }
 
-        public void Unsnooze()
+        public SnoozingProcessor()
         {
-            _snoozeCancellationToken.Cancel();
-            _snoozeCancellationToken = new CancellationTokenSource();
+            _snoozingService.OnChannelSnooze += SnoozingServiceOnOnChannelSnooze;
+            _snoozingService.OnChannelSnoozeFinished += SnoozingServiceOnOnChannelSnoozeFinished;
         }
     }
 }
