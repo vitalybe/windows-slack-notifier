@@ -101,7 +101,15 @@ namespace SlackWindowsTray
 
                 Log.Write(string.Format("Parsed message: [{0}] {1}: {2}", channelName, user, messageText));
 
-                RtmChannelNotifications.Instance.ShowNotification(channelId, channelName, user, messageText, isIncoming);
+                var incomingMessage = new IncomingMessage
+                {
+                    ChannelId = channelId,
+                    ChannelName = channelName,
+                    User = user,
+                    MessageText = messageText,
+                    IsIncoming = isIncoming
+                };
+                RtmChannelNotifications.Instance.ShowNotification(incomingMessage);
             }
             catch (Exception e)
             {

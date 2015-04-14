@@ -16,7 +16,6 @@ namespace ToastNotifications
         private readonly FormAnimator _animator;
         private IntPtr _currentForegroundWindow;
         private List<string> messages = new List<string>();
-        private string _channelId;
 
         public event EventHandler<string> OnQuickReply = delegate { };
 
@@ -33,13 +32,15 @@ namespace ToastNotifications
         {
             InitializeComponent();
 
+            ChannelId = channelId;
+            ChannelName = channelName;
+
             if (durationSeconds < 0)
                 durationSeconds = int.MaxValue;
             else
                 durationSeconds = durationSeconds * 1000;
 
             lifeTimer.Interval = durationSeconds;
-            _channelId = channelId;
             labelTitle.Text = channelName;
 
             _animator = new FormAnimator(this, animation, direction, 500);
@@ -62,10 +63,9 @@ namespace ToastNotifications
             }
         }
 
-        public string ChannelId
-        {
-            get { return _channelId; }
-        }
+        public string ChannelId { get; private set; }
+        public string ChannelName { get; private set; }
+
 
         #region Methods
 
@@ -84,6 +84,8 @@ namespace ToastNotifications
         }
 
         private int _messageCounter = 0;
+        private string _channelName;
+
         public void AddMessage(string username, string message, bool isIncoming)
         {
             string messageId = "message" + _messageCounter;

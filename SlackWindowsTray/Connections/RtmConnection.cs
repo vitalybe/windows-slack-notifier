@@ -49,8 +49,6 @@ namespace SlackWindowsTray
             _webSocket.OnMessage += OnSocketMessage;
             _webSocket.OnClose += OnSocketClose;
             _webSocket.Connect();
-
-            _webSocket.Close();
         }
 
         void OnSocketClose(object sender, CloseEventArgs e)
