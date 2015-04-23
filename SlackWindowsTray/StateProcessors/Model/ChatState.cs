@@ -1,9 +1,19 @@
+using Newtonsoft.Json;
+
 namespace SlackWindowsTray
 {
     public class ChatState
     {
-        public string name { get; set; }
-        public bool unread { get; set; }
-        public bool mention { get; set; }
+        // Calculated locally
+        public string Name { get; set; }
+
+        [JsonProperty(PropertyName = "name")]
+        public string Id { get; set; }
+        
+        [JsonProperty(PropertyName = "unread")]
+        public bool Unread { get; set; }
+
+        [JsonProperty(PropertyName = "mention")]
+        public bool Mention { get; set; }
     }
 }

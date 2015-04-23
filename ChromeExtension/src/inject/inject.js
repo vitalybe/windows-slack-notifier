@@ -70,7 +70,14 @@
 
             var channelName;
             try {
-                channelName = element.querySelector(".overflow_ellipsis").innerText.trim().replace("# ", "#");
+            	var aElement = element.querySelector("a");
+                channelName = aElement.getAttribute("data-channel-id");
+                channelName = channelName || aElement.getAttribute("data-group-id");
+                channelName = channelName || aElement.getAttribute("data-member-id");
+                
+                if(channelName === null) {
+                	throw new Error("Failed to get ID");
+                }
             } catch (err) {
                 console.log("SlackWindwowsTray: Failed to get channel name: " + err);
                 channelName = "EXT-ERROR";

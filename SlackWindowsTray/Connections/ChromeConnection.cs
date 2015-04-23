@@ -17,7 +17,7 @@ namespace SlackWindowsTray
 
         }
 
-
+        private SlackApi _slakApi = SlackApi.Instance;
         private WebSocketServer _wssv = new WebSocketServer(4649);
         
         protected override void OnOpen()
@@ -31,7 +31,12 @@ namespace SlackWindowsTray
             if (message.command == "chat-state")
             {
                 var bodyString = JsonConvert.SerializeObject(message.body);
-                var chatStateList = JsonConvert.DeserializeObject<List<ChatState>>(bodyString);
+                List<ChatState> chatStateList = JsonConvert.DeserializeObject<List<ChatState>>(bodyString);
+                foreach (var state in chatStateList)
+                {
+                    state.Name = _slakApi.SlackIdToName(state.Id);
+                }
+                
                 SlackState slackState = new SlackState(chatStateList);
                 OnSlackStateChanged(this, slackState);
             }

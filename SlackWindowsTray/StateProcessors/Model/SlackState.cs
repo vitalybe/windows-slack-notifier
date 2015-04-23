@@ -9,11 +9,11 @@ namespace SlackWindowsTray
 
         private void CalculateTrayState()
         {
-            if (_chatStates.Exists(chatState => chatState.mention))
+            if (_chatStates.Exists(chatState => chatState.Mention))
             {
                 TrayState = TrayStates.ImportantUnread;
             }
-            else if (_chatStates.Exists(chatState => chatState.unread))
+            else if (_chatStates.Exists(chatState => chatState.Unread))
             {
                 TrayState = TrayStates.Unread;
             }
@@ -47,7 +47,7 @@ namespace SlackWindowsTray
 
         public ChatState ReplaceChatState(ChatState replacementChatState)
         {
-            var originalChatState = ChatStates.FirstOrDefault(chatState => chatState.name == replacementChatState.name);
+            var originalChatState = ChatStates.FirstOrDefault(chatState => chatState.Id == replacementChatState.Id);
             if (originalChatState != null)
             {
                 _chatStates.Remove(originalChatState);

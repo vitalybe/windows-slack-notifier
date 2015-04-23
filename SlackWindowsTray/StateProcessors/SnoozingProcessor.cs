@@ -16,16 +16,16 @@ namespace SlackWindowsTray
 
         private void SnoozeChat(SlackState lastSlackState, string chatName)
         {
-            var snoozedChatState = new ChatState {name = chatName, unread = false, mention = false};
+            var snoozedChatState = new ChatState {Id = chatName, Unread = false, Mention = false};
             var originalChatState = lastSlackState.ReplaceChatState(snoozedChatState);
             _snoozedChannelStates[chatName] = originalChatState;
         }
 
-        private void SnoozingServiceOnOnChannelSnooze(object sender, string channelName)
+        private void SnoozingServiceOnOnChannelSnooze(object sender, string channelId)
         {
-            if (!string.IsNullOrEmpty(channelName))
+            if (!string.IsNullOrEmpty(channelId))
             {
-                SnoozeChat(_lastSlackState, channelName);
+                SnoozeChat(_lastSlackState, channelId);
                 NextHandleState(_lastSlackState);
             }
             else
@@ -35,12 +35,12 @@ namespace SlackWindowsTray
 
         }
 
-        private void SnoozingServiceOnOnChannelSnoozeFinished(object sender, string channelName)
+        private void SnoozingServiceOnOnChannelSnoozeFinished(object sender, string channelId)
         {
-            if (!string.IsNullOrEmpty(channelName))
+            if (!string.IsNullOrEmpty(channelId))
             {
-                _lastSlackState.ReplaceChatState(_snoozedChannelStates[channelName]);
-                _snoozedChannelStates.Remove(channelName);
+                _lastSlackState.ReplaceChatState(_snoozedChannelStates[channelId]);
+                _snoozedChannelStates.Remove(channelId);
                 NextHandleState(_lastSlackState);
             }
             else
@@ -61,12 +61,12 @@ namespace SlackWindowsTray
             }
             else
             {
-                List<string> channelNames = slackState.ChatStates.Select(chatState => chatState.name).ToList();
-                foreach (var channelName in channelNames)
+                List<string> channelIds = slackState.ChatStates.Select(chatState => chatState.Id).ToList();
+                foreach (var channelId in channelIds)
                 {
-                    if (_snoozingService.IsChannelSnoozed(channelName))
+                    if (_snoozingService.IsChannelSnoozed(channelId))
                     {
-                        SnoozeChat(slackState, channelName);
+                        SnoozeChat(slackState, channelId);
                     }
                 }
 

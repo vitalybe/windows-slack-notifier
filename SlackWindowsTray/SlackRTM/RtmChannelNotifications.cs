@@ -12,23 +12,23 @@ namespace SlackWindowsTray.SlackRTM
         private readonly Dictionary<string, List<IncomingMessage>> _snoozedMessages = new Dictionary<string, List<IncomingMessage>>();
         private readonly Dictionary<string, Notification> _channels = new Dictionary<string, Notification>();
 
-        private void ShowAllSnoozed(string channelName)
+        private void ShowAllSnoozed(string channelId)
         {
-            foreach (var incomingMessage in _snoozedMessages[channelName])
+            foreach (var incomingMessage in _snoozedMessages[channelId])
             {
                 ShowNotification(incomingMessage);
             }
 
-            _snoozedMessages[channelName].Clear();
+            _snoozedMessages[channelId].Clear();
         }
 
-        private void SnoozingServiceOnOnChannelSnoozeFinished(object sender, string channelName)
+        private void OnChannelSnoozeFinished(object sender, string channelId)
         {
-            if (channelName != null)
+            if (channelId != null)
             {
-                if (_snoozedMessages.ContainsKey(channelName))
+                if (_snoozedMessages.ContainsKey(channelId))
                 {
-                    ShowAllSnoozed(channelName);
+                    ShowAllSnoozed(channelId);
                 }
             }
             else
@@ -43,18 +43,18 @@ namespace SlackWindowsTray.SlackRTM
             }
         }
 
-        private void SnoozingServiceOnOnChannelSnooze(object sender, string channelName)
+        private void OnChannelSnooze(object sender, string channelId)
         {
-            if (channelName != null)
+            if (channelId != null)
             {
-                if (_channels.ContainsKey(channelName))
+                if (_channels.ContainsKey(channelId))
                 {
-                    _channels[channelName].Close();
+                    _channels[channelId].Close();
                 }
             }
             else
             {
-                foreach (var openChannel in _channels.Values)
+                foreach (var openChannel in _channels.Values.ToList())
                 {
                     openChannel.Close();
                 }
@@ -64,14 +64,14 @@ namespace SlackWindowsTray.SlackRTM
 
         public void ShowNotification(IncomingMessage message)
         {
-            if (_snoozingService.IsDndMode || _snoozingService.IsChannelSnoozed(message.ChannelName))
+            if (_snoozingService.IsDndMode || _snoozingService.IsChannelSnoozed(message.ChannelId))
             {
-                if (!_snoozedMessages.ContainsKey(message.ChannelName))
+                if (!_snoozedMessages.ContainsKey(message.ChannelId))
                 {
-                    _snoozedMessages[message.ChannelName] = new List<IncomingMessage>();
+                    _snoozedMessages[message.ChannelId] = new List<IncomingMessage>();
                 }
 
-                _snoozedMessages[message.ChannelName].Add(message);
+                _snoozedMessages[message.ChannelId].Add(message);
             }
             else
             {
@@ -81,17 +81,17 @@ namespace SlackWindowsTray.SlackRTM
                     return;
                 }
 
-                if (!_channels.ContainsKey(message.ChannelName))
+                if (!_channels.ContainsKey(message.ChannelId))
                 {
                     var newNotification = new Notification(message.ChannelId, message.ChannelName, 20, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
                     newNotification.Closed += OnChannelClosed;
                     newNotification.OnQuickReply += OnChannelQuickReply;
 
                     newNotification.Show();
-                    _channels.Add(message.ChannelName, newNotification);
+                    _channels.Add(message.ChannelId, newNotification);
                 }
 
-                Notification toastNotification = _channels[message.ChannelName];
+                Notification toastNotification = _channels[message.ChannelId];
                 toastNotification.AddMessage(message.User, message.MessageText, message.IsIncoming);
             }
         }
@@ -105,15 +105,15 @@ namespace SlackWindowsTray.SlackRTM
         private void OnChannelClosed(object sender, EventArgs eventArgs)
         {
             var notification = (Notification) sender;
-            _channels.Remove(notification.ChannelName);
+            _channels.Remove(notification.ChannelId);
         }
 
 
         public static readonly RtmChannelNotifications Instance = new RtmChannelNotifications();
         private RtmChannelNotifications()
         {
-            _snoozingService.OnChannelSnooze += SnoozingServiceOnOnChannelSnooze;
-            _snoozingService.OnChannelSnoozeFinished += SnoozingServiceOnOnChannelSnoozeFinished;
+            _snoozingService.OnChannelSnooze += OnChannelSnooze;
+            _snoozingService.OnChannelSnoozeFinished += OnChannelSnoozeFinished;
         }
     }
 }

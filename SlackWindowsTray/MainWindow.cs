@@ -118,7 +118,7 @@ namespace SlackWindowsTray
         {
             return delegate
             {
-                _snoozingService.Snooze(chatState.name);
+                _snoozingService.Snooze(chatState.Id);
             };
         }
 
@@ -143,9 +143,9 @@ namespace SlackWindowsTray
             if (_lastSlackState != null)
             {
                 var newMenuItems = (from chatState in _lastSlackState.ChatStates
-                                    where chatState.unread
-                                    orderby chatState.name
-                                    let menuName = "Snooze " + chatState.name
+                                    where chatState.Unread
+                                    orderby chatState.Id
+                                    let menuName = "Snooze " + chatState.Name
                                     let clickEvent = ChatSnoozeItemClickEvent(chatState)
                                     select new ToolStripMenuItem(menuName, null, clickEvent) { Tag = CHAT_SNOOZE_SEPERATOR }
                                    ).ToList();

@@ -11,70 +11,8 @@ namespace SlackWindowsTray
     // Parses recieved messages
     class RtmIncomingMessages
     {
-        // Channels, groups, users - ID and name
-        private Dictionary<string, string> _slackObjects = new Dictionary<string, string>();
-        private bool _isRefreshing = false;
+        private SlackApi _slackApi = SlackApi.Instance;
         private string myUsername = null;
-
-        private string SlackIdToName(string id)
-        {
-            if (!_slackObjects.ContainsKey(id))
-            {
-                RefreshAll();
-            }
-
-            var name = "UNKNOWN";
-            if (_slackObjects.ContainsKey(id))
-            {
-                name = _slackObjects[id];
-            }
-
-            return name;
-        }
-
-        private void RefreshAll()
-        {
-            if (_isRefreshing)
-            {
-                // Prevent recursion
-                return;
-            }
-
-            _isRefreshing = true;
-            try
-            {
-                _slackObjects.Clear();
-                _slackObjects.Add("USLACKBOT", "slackbot");
-
-                RefreshData("channels.list", "channels", "#");
-                RefreshData("users.list", "members");
-                RefreshData("groups.list", "groups");
-                RefreshImData();
-            }
-            finally
-            {
-                _isRefreshing = false;
-            }
-        }
-
-        private void RefreshData(string api, string collectionName, string prefix = "")
-        {
-            var dataCollection = SlackApi.Instance.Get(api)[collectionName];
-            foreach (dynamic data in dataCollection)
-            {
-                _slackObjects.Add(data.id.Value, prefix + data.name.Value);
-            }
-        }
-
-        private void RefreshImData()
-        {
-            var dataCollection = SlackApi.Instance.Get("im.list")["ims"];
-            foreach (dynamic data in dataCollection)
-            {
-                _slackObjects.Add(data.id.Value, SlackIdToName(data.user.Value));
-            }
-        }
-
 
         public void OnMessage(dynamic message)
         {
@@ -85,9 +23,9 @@ namespace SlackWindowsTray
                     return;                   
                 }
 
-                string channelId = message.channel.Value;
-                var channelName = SlackIdToName(channelId);
-                var user = SlackIdToName(message.user.Value);
+                var channelId = GetChannelId(message);
+                var channelName = _slackApi.SlackIdToName(channelId);
+                var user = _slackApi.SlackIdToName(message.user.Value);
                 bool isIncoming = myUsername != user;
 
                 // Find object names in the message (e.g user references) and relace them
@@ -96,7 +34,7 @@ namespace SlackWindowsTray
                 messageText = messageIdRegex.Replace(messageText, match =>
                 {
                     var id = match.Groups[1].Value;
-                    return SlackIdToName(id);
+                    return _slackApi.SlackIdToName(id);
                 });
 
                 Log.Write(string.Format("Parsed message: [{0}] {1}: {2}", channelName, user, messageText));
@@ -115,6 +53,23 @@ namespace SlackWindowsTray
             {
                 Log.Write("ERROR: Failed to display message: " + e.Message);
             }
+        }
+
+        private string GetChannelId(dynamic message)
+        {
+            // RTM IM messages are received via IM id, e.g: D823482. 
+            // However, from the Chrome extension they are received as a user ID: U234234
+            // The following logic translates it
+            string channelId;
+            if (message.channel.Value.StartsWith("D"))
+            {
+                channelId = _slackApi.SlackImToUser(message.channel.Value);
+            }
+            else
+            {
+                channelId = message.channel.Value;
+            }
+            return channelId;
         }
 
         public static readonly RtmIncomingMessages Instance = new RtmIncomingMessages();
