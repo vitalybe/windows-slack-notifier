@@ -34,6 +34,7 @@ namespace ToastNotifications
             this.labelTitle = new System.Windows.Forms.Label();
             this.txtQuickReply = new System.Windows.Forms.TextBox();
             this.htmlBody = new TheArtOfDev.HtmlRenderer.WinForms.HtmlPanel();
+            this.btnSnooze = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lifeTimer
@@ -49,7 +50,7 @@ namespace ToastNotifications
             this.labelTitle.ForeColor = System.Drawing.Color.White;
             this.labelTitle.Location = new System.Drawing.Point(0, 1);
             this.labelTitle.Name = "labelTitle";
-            this.labelTitle.Size = new System.Drawing.Size(294, 21);
+            this.labelTitle.Size = new System.Drawing.Size(294, 24);
             this.labelTitle.TabIndex = 0;
             this.labelTitle.Text = "title goes here";
             this.labelTitle.Click += new System.EventHandler(this.labelTitle_Click);
@@ -71,11 +72,24 @@ namespace ToastNotifications
             this.htmlBody.BackColor = System.Drawing.Color.Transparent;
             this.htmlBody.BaseStylesheet = null;
             this.htmlBody.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.htmlBody.Location = new System.Drawing.Point(8, 26);
+            this.htmlBody.Location = new System.Drawing.Point(8, 25);
             this.htmlBody.Name = "htmlBody";
             this.htmlBody.Size = new System.Drawing.Size(278, 96);
             this.htmlBody.TabIndex = 2;
             this.htmlBody.Text = "<p style=\"margin: 0; color: yellow; font-weight: bold\">hi</p>";
+            // 
+            // btnSnooze
+            // 
+            this.btnSnooze.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(57)))), ((int)(((byte)(75)))));
+            this.btnSnooze.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSnooze.ForeColor = System.Drawing.Color.White;
+            this.btnSnooze.Location = new System.Drawing.Point(224, 1);
+            this.btnSnooze.Name = "btnSnooze";
+            this.btnSnooze.Size = new System.Drawing.Size(53, 22);
+            this.btnSnooze.TabIndex = 3;
+            this.btnSnooze.Text = "Snooze";
+            this.btnSnooze.UseVisualStyleBackColor = false;
+            this.btnSnooze.Click += new System.EventHandler(this.btnSnooze_Click);
             // 
             // Notification
             // 
@@ -85,6 +99,7 @@ namespace ToastNotifications
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(294, 159);
             this.ControlBox = false;
+            this.Controls.Add(this.btnSnooze);
             this.Controls.Add(this.htmlBody);
             this.Controls.Add(this.txtQuickReply);
             this.Controls.Add(this.labelTitle);
@@ -112,5 +127,6 @@ namespace ToastNotifications
         private System.Windows.Forms.Label labelTitle;
         private System.Windows.Forms.TextBox txtQuickReply;
         private TheArtOfDev.HtmlRenderer.WinForms.HtmlPanel htmlBody;
+        private System.Windows.Forms.Button btnSnooze;
     }
 }

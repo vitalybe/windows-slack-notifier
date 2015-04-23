@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using System.IO;
 using System.Linq;
+using SlackWindowsTray.SlackRTM;
 using ToastNotifications;
 
 namespace SlackWindowsTray
@@ -18,9 +19,11 @@ namespace SlackWindowsTray
         public static Form Form { get { return _form; } }
 
         private StateService _stateService = StateService.Instance;
+        private SlackApi _slackApi = SlackApi.Instance;
         private SnoozingService _snoozingService = SnoozingService.Instance;
         private ChromeConnection _chromeConnection = ChromeConnection.Instance;
         private RtmConnection _rtmConnection = RtmConnection.Instance;
+        private RtmChannelNotifications _rtmChannelNotifications = RtmChannelNotifications.Instance;
         private SlackState _lastSlackState;
 
         public MainWindow()
@@ -114,11 +117,11 @@ namespace SlackWindowsTray
         }
 
 
-        private EventHandler ChatSnoozeItemClickEvent(ChatState chatState)
+        private EventHandler ChatSnoozeItemClickEvent(string channelId)
         {
             return delegate
             {
-                _snoozingService.Snooze(chatState.Id);
+                _snoozingService.Snooze(channelId);
             };
         }
 
@@ -142,11 +145,21 @@ namespace SlackWindowsTray
             // Next we create items for channels that currently have notification and thus, can be snoozed.
             if (_lastSlackState != null)
             {
-                var newMenuItems = (from chatState in _lastSlackState.ChatStates
-                                    where chatState.Unread
-                                    orderby chatState.Id
-                                    let menuName = "Snooze " + chatState.Name
-                                    let clickEvent = ChatSnoozeItemClickEvent(chatState)
+                // This gets all the channel ids, as given by Chrome extension, that are unread
+                var unreadChannelIds = from chatState in _lastSlackState.ChatStates
+                                       where chatState.Unread
+                                       select chatState.Id;
+
+                // This also includes the ones that have open notifications 
+                unreadChannelIds = unreadChannelIds.Concat(_rtmChannelNotifications.OpenNotificationsIds);
+
+                // Remove the duplicates
+                unreadChannelIds = unreadChannelIds.Distinct();
+
+                var newMenuItems = (from unreadChannelId in unreadChannelIds
+                                    orderby unreadChannelId
+                                    let menuName = "Snooze " + _slackApi.SlackIdToName(unreadChannelId)
+                                    let clickEvent = ChatSnoozeItemClickEvent(unreadChannelId)
                                     select new ToolStripMenuItem(menuName, null, clickEvent) { Tag = CHAT_SNOOZE_SEPERATOR }
                                    ).ToList();
 

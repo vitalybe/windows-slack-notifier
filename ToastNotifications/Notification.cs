@@ -18,6 +18,7 @@ namespace ToastNotifications
         private List<string> messages = new List<string>();
 
         public event EventHandler<string> OnQuickReply = delegate { };
+        public event EventHandler OnSnooze = delegate { };
 
 
         /// <summary>
@@ -194,6 +195,12 @@ namespace ToastNotifications
                 txtQuickReply.Text = "";
             }
         }
+
+        private void btnSnooze_Click(object sender, EventArgs e)
+        {
+            OnSnooze(this, new EventArgs());
+        }
+
 
         private void AllControls_MouseMove(object sender, EventArgs e)
         {

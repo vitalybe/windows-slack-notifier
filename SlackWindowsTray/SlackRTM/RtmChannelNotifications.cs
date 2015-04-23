@@ -9,8 +9,11 @@ namespace SlackWindowsTray.SlackRTM
     {
         private SnoozingService _snoozingService = SnoozingService.Instance;
 
+        // The messages that arrived while the channel was snoozed
         private readonly Dictionary<string, List<IncomingMessage>> _snoozedMessages = new Dictionary<string, List<IncomingMessage>>();
-        private readonly Dictionary<string, Notification> _channels = new Dictionary<string, Notification>();
+        
+        // Channel ID -> Open notification
+        private readonly Dictionary<string, Notification> _openNotifications = new Dictionary<string, Notification>();
 
         private void ShowAllSnoozed(string channelId)
         {
@@ -47,20 +50,39 @@ namespace SlackWindowsTray.SlackRTM
         {
             if (channelId != null)
             {
-                if (_channels.ContainsKey(channelId))
+                if (_openNotifications.ContainsKey(channelId))
                 {
-                    _channels[channelId].Close();
+                    _openNotifications[channelId].Close();
                 }
             }
             else
             {
-                foreach (var openChannel in _channels.Values.ToList())
+                foreach (var openChannel in _openNotifications.Values.ToList())
                 {
                     openChannel.Close();
                 }
             }
         }
 
+        private void OnNotificationSnoozeClick(object sender, EventArgs e)
+        {
+            var notification = (Notification)sender;
+            _snoozingService.Snooze(notification.ChannelId);
+        }
+
+        private void OnChannelQuickReply(object sender, string reply)
+        {
+            var notification = (Notification)sender;
+            SlackApi.Instance.PostMessage(notification.ChannelId, reply);
+        }
+
+        private void OnChannelClosed(object sender, EventArgs eventArgs)
+        {
+            var notification = (Notification)sender;
+            _openNotifications.Remove(notification.ChannelId);
+        }
+
+        public IEnumerable<string> OpenNotificationsIds { get { return _openNotifications.Keys; } }
 
         public void ShowNotification(IncomingMessage message)
         {
@@ -81,33 +103,21 @@ namespace SlackWindowsTray.SlackRTM
                     return;
                 }
 
-                if (!_channels.ContainsKey(message.ChannelId))
+                if (!_openNotifications.ContainsKey(message.ChannelId))
                 {
                     var newNotification = new Notification(message.ChannelId, message.ChannelName, 20, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
                     newNotification.Closed += OnChannelClosed;
                     newNotification.OnQuickReply += OnChannelQuickReply;
+                    newNotification.OnSnooze += OnNotificationSnoozeClick;
 
                     newNotification.Show();
-                    _channels.Add(message.ChannelId, newNotification);
+                    _openNotifications.Add(message.ChannelId, newNotification);
                 }
 
-                Notification toastNotification = _channels[message.ChannelId];
+                Notification toastNotification = _openNotifications[message.ChannelId];
                 toastNotification.AddMessage(message.User, message.MessageText, message.IsIncoming);
             }
         }
-
-        private void OnChannelQuickReply(object sender, string reply)
-        {
-            var notification = (Notification)sender;
-            SlackApi.Instance.PostMessage(notification.ChannelId, reply);
-        }
-
-        private void OnChannelClosed(object sender, EventArgs eventArgs)
-        {
-            var notification = (Notification) sender;
-            _channels.Remove(notification.ChannelId);
-        }
-
 
         public static readonly RtmChannelNotifications Instance = new RtmChannelNotifications();
         private RtmChannelNotifications()
