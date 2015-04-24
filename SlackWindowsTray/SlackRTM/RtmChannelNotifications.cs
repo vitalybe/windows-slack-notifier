@@ -10,7 +10,7 @@ namespace SlackWindowsTray.SlackRTM
         private SnoozingService _snoozingService = SnoozingService.Instance;
 
         // The messages that arrived while the channel was snoozed
-        private readonly Dictionary<string, List<IncomingMessage>> _snoozedMessages = new Dictionary<string, List<IncomingMessage>>();
+        private readonly Dictionary<string, List<RtmMessageModel>> _snoozedMessages = new Dictionary<string, List<RtmMessageModel>>();
         
         // Channel ID -> Open notification
         private readonly Dictionary<string, Notification> _openNotifications = new Dictionary<string, Notification>();
@@ -19,7 +19,7 @@ namespace SlackWindowsTray.SlackRTM
         {
             foreach (var incomingMessage in _snoozedMessages[channelId])
             {
-                ShowNotification(incomingMessage);
+                ProcessMessage(incomingMessage);
             }
 
             _snoozedMessages[channelId].Clear();
@@ -84,39 +84,55 @@ namespace SlackWindowsTray.SlackRTM
 
         public IEnumerable<string> OpenNotificationsIds { get { return _openNotifications.Keys; } }
 
-        public void ShowNotification(IncomingMessage message)
+        public void ProcessMessage(RtmMessageModel message)
         {
             if (_snoozingService.IsDndMode || _snoozingService.IsChannelSnoozed(message.ChannelId))
             {
-                if (!_snoozedMessages.ContainsKey(message.ChannelId))
-                {
-                    _snoozedMessages[message.ChannelId] = new List<IncomingMessage>();
-                }
-
-                _snoozedMessages[message.ChannelId].Add(message);
+                SnoozeMessage(message);
             }
             else
             {
-                if (MainWindow.Form.InvokeRequired)
-                {
-                    MainWindow.Form.Invoke((Action)(delegate { ShowNotification(message); }));
-                    return;
-                }
-
-                if (!_openNotifications.ContainsKey(message.ChannelId))
-                {
-                    var newNotification = new Notification(message.ChannelId, message.ChannelName, 20, FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
-                    newNotification.Closed += OnChannelClosed;
-                    newNotification.OnQuickReply += OnChannelQuickReply;
-                    newNotification.OnSnooze += OnNotificationSnoozeClick;
-
-                    newNotification.Show();
-                    _openNotifications.Add(message.ChannelId, newNotification);
-                }
-
-                Notification toastNotification = _openNotifications[message.ChannelId];
-                toastNotification.AddMessage(message.User, message.MessageText, message.IsIncoming);
+                DisplayNotification(message);
             }
+        }
+
+        private void DisplayNotification(RtmMessageModel message)
+        {
+            if (MainWindow.Form.InvokeRequired)
+            {
+                MainWindow.Form.Invoke((Action)(delegate { DisplayNotification(message); }));
+                return;
+            }
+
+            var existingNotification = _openNotifications.FirstOrDefault(x => x.Key == message.ChannelId).Value;
+            
+            // Don't create new notifications for messages posted by the current user
+            if (existingNotification != null || message.IsIncoming)
+            {
+                if (existingNotification == null)
+                {
+                    existingNotification = new Notification(message.ChannelId, message.ChannelName, 20,
+                        FormAnimator.AnimationMethod.Slide, FormAnimator.AnimationDirection.Up);
+                    existingNotification.Closed += OnChannelClosed;
+                    existingNotification.OnQuickReply += OnChannelQuickReply;
+                    existingNotification.OnSnooze += OnNotificationSnoozeClick;
+
+                    existingNotification.Show();
+                    _openNotifications.Add(message.ChannelId, existingNotification);
+                }
+
+                existingNotification.AddMessage(message.User, message.MessageText, message.IsIncoming);
+            }
+        }
+
+        private void SnoozeMessage(RtmMessageModel message)
+        {
+            if (!_snoozedMessages.ContainsKey(message.ChannelId))
+            {
+                _snoozedMessages[message.ChannelId] = new List<RtmMessageModel>();
+            }
+
+            _snoozedMessages[message.ChannelId].Add(message);
         }
 
         public static readonly RtmChannelNotifications Instance = new RtmChannelNotifications();

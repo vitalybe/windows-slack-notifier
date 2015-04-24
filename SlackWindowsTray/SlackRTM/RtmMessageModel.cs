@@ -1,6 +1,6 @@
 namespace SlackWindowsTray
 {
-    class IncomingMessage
+    class RtmMessageModel
     {
         public string ChannelId { get; set; }
         public string ChannelName { get; set; }

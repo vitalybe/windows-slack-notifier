@@ -71,7 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SlackRTM\IncomingMessage.cs" />
+    <Compile Include="SlackRTM\RtmMessageModel.cs" />
     <Compile Include="SnoozingService.cs" />
     <Compile Include="Utils\ChromeActivator.cs" />
     <Compile Include="Utils\ControlExtensions.cs" />

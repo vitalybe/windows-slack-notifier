@@ -39,7 +39,7 @@ namespace SlackWindowsTray
 
                 Log.Write(string.Format("Parsed message: [{0}] {1}: {2}", channelName, user, messageText));
 
-                var incomingMessage = new IncomingMessage
+                var messageModel = new RtmMessageModel
                 {
                     ChannelId = channelId,
                     ChannelName = channelName,
@@ -47,7 +47,7 @@ namespace SlackWindowsTray
                     MessageText = messageText,
                     IsIncoming = isIncoming
                 };
-                RtmChannelNotifications.Instance.ShowNotification(incomingMessage);
+                RtmChannelNotifications.Instance.ProcessMessage(messageModel);
             }
             catch (Exception e)
             {

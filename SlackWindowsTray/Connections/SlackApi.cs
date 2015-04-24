@@ -88,6 +88,21 @@ namespace SlackWindowsTray
 
             return userId;
         }
+        public string SlackUserToIm(string userId)
+        {
+            if (!_imToUserDictionary.ContainsValue(userId))
+            {
+                RefreshAll();
+            }
+
+            var imChannelId = "UNKNOWN_CHANNEL";
+            if (_imToUserDictionary.ContainsValue(userId))
+            {
+                imChannelId = _imToUserDictionary.First(kv => kv.Value == userId).Key;
+            }
+
+            return imChannelId;
+        }
         public string SlackIdToName(string id)
         {
             if (!_slackObjects.ContainsKey(id))
@@ -115,6 +130,12 @@ namespace SlackWindowsTray
 
         public void PostMessage(string channelId, string text)
         {
+            // It is only allowed to post messages to users via their IM channel id.
+            if (channelId.StartsWith("U"))
+            {
+                channelId = SlackUserToIm(channelId);
+            }
+
             var url = string.Format("https://slack.com/api/chat.postMessage?token={0}&channel={1}&as_user=true", SlackWindowsTray.Default.SlackToken, channelId);
 
             dynamic data = new ExpandoObject(); // Or any dynamic type
