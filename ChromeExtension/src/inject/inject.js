@@ -6,7 +6,10 @@
     var waitingCommandRequests = [];
     var notificationElement = null;
 
-    var connected = false;
+    var STATE_DISCONNECTED = 0;
+    var STATE_CONNECTED = 1;
+    var STATE_VERIFIED = 2;
+    var connectionState = STATE_DISCONNECTED;
 
     
     function log(message) {
@@ -21,6 +24,11 @@
         return window.location.hostname.replace(urlParts[0], '').slice(0, -1);
     }
 
+    function closeNotification() {
+        if (notificationElement) {
+            document.querySelector("body").removeChild(notificationElement);
+        }
+    }
 
     function notification(title, content) {
         if (!notificationElement) {
@@ -29,7 +37,7 @@
             notificationClose.className = "close-notification";
             notificationClose.innerText = "x";
             notificationClose.onclick = function() {
-                document.querySelector("body").removeChild(notificationElement);
+                closeNotification();
             };
 
             notificationElement.id = "windows-tray-notification";
@@ -59,7 +67,7 @@
     function sendUpdatesWhileConnected() {
 
         setTimeout(sendUpdatesWhileConnected, 5000);
-        if (!connected) {
+        if (connectionState != STATE_VERIFIED) {
             return;
         }
 
@@ -132,7 +140,7 @@
     function onPortDisconnect() {
         log("onPortDisconnect - Port disconnected, queuing to reconnect in " + RECONNECT_AFTER_MS + "ms");
         port = null;
-        connected = false;
+        connectionState = STATE_DISCONNECTED;
         // Reconnect after X seconds
         setTimeout(connect, RECONNECT_AFTER_MS);
 
@@ -165,18 +173,29 @@
         port.onDisconnect.addListener(onPortDisconnect);
         port.onMessage.addListener(onPortMessage);
 
+        setTimeout(function() {
+            if(connectionState == STATE_DISCONNECTED) {
+                notification("Failed to connect",
+                    "<p>Is Slack Windows Notifier running?</p>" +
+                    '<p>If you don\'t have it, the latest version is <a href="https://github.com/vitalybe/windows-slack-notifier/releases" target="_blank">here</a>, ' +
+                    'run it and refresh Slack.</p>'
+                    );
+            }
+        }, 5000);
+
         var extensionVersion = chrome.runtime.getManifest().version;
         return waitForCommand("connected")
             .then(function() {
                 log("connect - Connected. Requesting version...");
                 return sendCommandWaitReply("version").catch(function() {
+                    connectionState = STATE_CONNECTED;
                     log("connect - Disconnected after requesting a version, probably old app version");
                     // This will occur when the app closed the connection after the `version` command was sent
                     // It is probably that it will happen due to an old version
                     notification("Update possibly required",
                         "<p>Failed to get app version, this might be due to an older version.</p>" +
                         "<p><b>Extension version</b>: " + extensionVersion + "</p>" +
-                        '<p>Download the latest version <a href="https://github.com/vitalybe/windows-slack-notifier/releases">here</a>, ' +
+                        '<p>Download the latest version <a href="https://github.com/vitalybe/windows-slack-notifier/releases" target="_blank">here</a>, ' +
                         'run it and refresh Slack.</p>'
                         );
 
@@ -189,7 +208,10 @@
                 log("connect - Extension version: " + extensionVersion);
                 if (appVersion === extensionVersion) {
                     log("connect - Versions match, connected successfully");
-                    connected = true;
+                    connectionState = STATE_VERIFIED;
+    
+                    // In case notification "connection failed" notification was shown
+                    closeNotification(); 
                 } else {
                     log("connect - Versions mismatch, showing notification");
                     notification("Update required",
