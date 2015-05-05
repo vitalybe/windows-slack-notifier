@@ -23,7 +23,7 @@ Options:
 
 ![Options](http://i.imgur.com/9I0qg3n.png)
 
-Usage instructions
+Installation instructions
 --
 
 1. Install the extension to Chrome: [Slack Notifier - Chrome extension](https://chrome.google.com/webstore/detail/slack-windows-tray-notifi/ipmkjncjnjpookgagldhnehgdihdppkb)
